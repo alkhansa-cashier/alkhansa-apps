@@ -226,5 +226,11 @@
   "id": "com.khansaa.desktop.whole",
   "name": "AlKhansa-Wholesale",
   "file": "AlKhansa-Wholesale-Windows-Setup"
+ },
+ {
+  "dir": "www-stone",
+  "id": "com.khansaa.desktop.stone",
+  "name": "AlKhansa-Stone",
+  "file": "AlKhansa-Stone-Windows-Setup"
  }
 ]

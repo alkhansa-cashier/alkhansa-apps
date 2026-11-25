@@ -278,5 +278,12 @@
   "id": "com.khansaa.wholesale",
   "name": "الخنساء جملة",
   "file": "AlKhansa-Wholesale"
+ },
+ {
+  "ed": "stone",
+  "dir": "www-stone",
+  "id": "com.khansaa.stone",
+  "name": "الخنساء مناشر",
+  "file": "AlKhansa-Stone"
  }
 ]
