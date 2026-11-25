@@ -39,6 +39,10 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
 
+      # رقم الإصدار لازم يضل أكبر من النسخ القديمة (آخرها 41)
+      - name: Version
+        run: echo "VC=$((100+${{ github.run_number }}))" >> $GITHUB_ENV
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -82,12 +86,12 @@ jobs:
           M=android/app/src/main/AndroidManifest.xml
           grep -q 'xmlns:tools' $M || sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android"#<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"#' $M
           sed -i 's#</manifest>#    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />\n</manifest>#' $M
-          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i "s/versionCode 1$/versionCode ${{ env.VC }}/" android/app/build.gradle
           sed -i '0,/^android {/s//android {\n    signingConfigs {\n        khansa {\n            storeFile rootProject.file("..\/signing\/debug.keystore")\n            storePassword "android"\n            keyAlias "androiddebugkey"\n            keyPassword "android"\n        }\n    }/' android/app/build.gradle
           sed -i '0,/release {/s//release {\n            signingConfig signingConfigs.khansa/' android/app/build.gradle
           grep -n -A8 "signingConfigs {" android/app/build.gradle
           grep -n -A3 "release {" android/app/build.gradle
-          sed -i "s/versionName \"1.0\"/versionName \"1.1.${{ github.run_number }}\"/" android/app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.1.${{ env.VC }}\"/" android/app/build.gradle
           cat $M
 
       - name: Copy web files
@@ -100,13 +104,13 @@ jobs:
           ./gradlew assembleRelease
 
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/release/app-release.apk ${{ matrix.file }}-${{ github.run_number }}.apk
+        run: cp android/app/build/outputs/apk/release/app-release.apk ${{ matrix.file }}-${{ env.VC }}.apk
 
       - name: Publish APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: AlKhansa build ${{ github.run_number }}
-          files: ${{ matrix.file }}-${{ github.run_number }}.apk
+          tag_name: build-${{ env.VC }}
+          name: AlKhansa build ${{ env.VC }}
+          files: ${{ matrix.file }}-${{ env.VC }}.apk
           prerelease: true
 # نهاية الملف: build.yml
