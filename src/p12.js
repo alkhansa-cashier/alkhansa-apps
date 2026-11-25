@@ -1,5 +1,5 @@
 /* ============ p12: وحدات التعبئة (قطعة، دزينة، كرتونة…) من نموذج المنتج ============ */
-const UPK=EDITION==='shop'||BUILD;
+const UPK=EDITION==='shop'||EDITION==='acc'||BUILD;
 const unitsOf=p=>String(p&&p.units||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean).map(parseOpt).filter(u=>u.f>0);
 const bigUnit=p=>unitsOf(p).filter(u=>u.f>1).sort((a,b)=>b.f-a.f)[0];
 function unitBreak(p,q){const u=bigUnit(p);if(!u||!(q>0))return '';const n=Math.floor(q/u.f+1e-9),r=r3(q-n*u.f);return n?`${fmt(n)} ${u.n}${r?' + '+fq(r):''}`:''}

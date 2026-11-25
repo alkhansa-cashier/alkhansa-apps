@@ -1,8 +1,8 @@
 /* ============ الألبسة، مواد البناء، الطاقة الشمسية ============ */
-const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&S().units!==false);
+const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||((EDITION==='shop'||EDITION==='acc')&&S().units!==false);
 /* المقاسات والألوان / الوحدات: اختيار عند الإضافة للسلة */
 const optsOf=p=>String((CLOTH?p.vars:p.units)||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean);
-if(CLOTH||BUILD||EDITION==='shop'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
+if(CLOTH||BUILD||EDITION==='shop'||EDITION==='acc'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
  if(!v)return _ac(cn,p,q);const cart=carts[cn];let it=cart.find(x=>x.pid===p.id&&x.v===v.n);
  if(it){it.qty=r3(it.qty+q);return it}it={pid:p.id,name:p.name+' · '+v.n,price:v.p>0?roundM(v.p):roundM(curPrice(p)*v.f),cost:roundM(pCost(p)*v.f),qty:q,v:v.n,f:v.f};cart.push(it);if(UNITQ())it.uq=v.f;return it}}
 const parseOpt=s=>{s=toLatin(s);const m=s.match(/^(.+?)\s*[=:]\s*([\d.]+)(?:\s*[@بـ]+\s*([\d.]+))?$/);return m?{n:m[1].trim(),f:+m[2],p:m[3]?+m[3]:0}:{n:s,f:1,p:0}};

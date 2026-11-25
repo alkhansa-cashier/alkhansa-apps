@@ -2112,10 +2112,10 @@ if(PHARM){const _ac=addCart;addCart=function(cn,p,q){const it=_ac(cn,p,q);try{co
 /* نهاية p7.js */
 
 /* ============ الألبسة، مواد البناء، الطاقة الشمسية ============ */
-const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&S().units!==false);
+const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||((EDITION==='shop'||EDITION==='acc')&&S().units!==false);
 /* المقاسات والألوان / الوحدات: اختيار عند الإضافة للسلة */
 const optsOf=p=>String((CLOTH?p.vars:p.units)||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean);
-if(CLOTH||BUILD||EDITION==='shop'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
+if(CLOTH||BUILD||EDITION==='shop'||EDITION==='acc'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
  if(!v)return _ac(cn,p,q);const cart=carts[cn];let it=cart.find(x=>x.pid===p.id&&x.v===v.n);
  if(it){it.qty=r3(it.qty+q);return it}it={pid:p.id,name:p.name+' · '+v.n,price:v.p>0?roundM(v.p):roundM(curPrice(p)*v.f),cost:roundM(pCost(p)*v.f),qty:q,v:v.n,f:v.f};cart.push(it);if(UNITQ())it.uq=v.f;return it}}
 const parseOpt=s=>{s=toLatin(s);const m=s.match(/^(.+?)\s*[=:]\s*([\d.]+)(?:\s*[@بـ]+\s*([\d.]+))?$/);return m?{n:m[1].trim(),f:+m[2],p:m[3]?+m[3]:0}:{n:s,f:1,p:0}};
@@ -2398,7 +2398,7 @@ function demoClear(){const K=['products','customers','suppliers','sales','ledger
 A.demoadd=()=>ask('تعبئة منتجات وزبائن وفواتير شهر كامل للتجربة؟ (بتنمسح بكبسة وحدة بعدين)','تعبئة',()=>{demoSeed();toast('تمت تعبئة البيانات التجريبية')});
 A.demodel=()=>ask('مسح كل البيانات التجريبية (المنتجات والفواتير والزبائن التجريبيين)؟ بياناتك الحقيقية ما بتتأثر.','مسح',()=>{demoClear();toast('انمسحت البيانات التجريبية، بالتوفيق 🌹')},true);
 {const f=seed;seed=function(kind){if(EDITION==='shop'&&kind!=='rest')return demoSeed();return f(kind)}}
-if(EDITION==='shop'&&ui.ws===undefined)ui.ws=true;
+if(EDITION==='shop'&&ui.ws===undefined)ui.ws=true;if(EDITION==='acc')ui.ws=false;
 
 /* ---------- 9) الإعدادات ---------- */
 {const f=setView;setView=function(){let h=f();if(LITE)return h;const s=S();
@@ -2408,7 +2408,7 @@ if(EDITION==='shop'&&ui.ws===undefined)ui.ws=true;
   <div class="g2 mt"><button class="btn ghost" data-a="cloudnow">${ic('share')} ارفع نسخة هلأ</button><button class="btn ghost" data-a="opensheet" data-v="cloudget">${ic('down')} استرجاع</button></div>`);
  const ex=SX?card('مميزات المحل','شغّل يلي بتحتاجه',`${opt('تعليق الفواتير','بتوقف فاتورة زبون وبتخدم غيره وبترجعلها',sw(s.hold!==false,'tgon','hold'))}${opt('الإرجاع الجزئي','إرجاع قطعة أو أكتر من الفاتورة بدل الفاتورة كلها',sw(s.pret,'tg','pret'))}
   ${opt('التقرير اليومي','تذكير كل يوم ببعت تقرير اليوم لصاحب المحل واتساب',sw(s.repDay,'tg','repDay'))}${s.repDay?opt('وقت التذكير','',seg('rephour',s.repHour||22,[[20,'8 م'],[21,'9 م'],[22,'10 م'],[23,'11 م']])):''}
-  ${EDITION==='shop'?opt('البيع بالوحدات (دزينة، كرتونة…)','المنتج يلي إله وحدات تعبئة، أول ما تكبس عليه بيسألك: قطعة، دزينة، كرتونة… (الوحدات بتنكتب بصفحة المنتج)',sw(s.units!==false,'tgon','units')):''}${opt('سعر التكلفة بفواتير الشراء','',seg('costmode',s.costMode||'avg',[['avg','المتوسط'],['last','آخر سعر']]))}`):'';
+  ${(EDITION==='shop'||EDITION==='acc')?opt('البيع بالوحدات (دزينة، كرتونة…)','المنتج يلي إله وحدات تعبئة، أول ما تكبس عليه بيسألك: قطعة، دزينة، كرتونة… (الوحدات بتنكتب بصفحة المنتج)',sw(s.units!==false,'tgon','units')):''}${opt('سعر التكلفة بفواتير الشراء','',seg('costmode',s.costMode||'avg',[['avg','المتوسط'],['last','آخر سعر']]))}`):'';
  const demo=EDITION==='shop'?card('البيانات التجريبية','منتجات وزبائن وفواتير شهر كامل لتجرّب التطبيق، وبتنمسح بكبسة',DB.products.some(p=>p.d)?`<button class="btn ghost bad wide" data-a="demodel">${ic('trash')} مسح البيانات التجريبية</button>`:`<button class="btn ghost wide" data-a="demoadd">${ic('plus')} تعبئة بيانات تجريبية</button>`):'';
  const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,ex+cloud+demo+mk):h+ex+cloud+demo}}
 A.tgon=d=>{S()[d.k]=S()[d.k]===false;save();render()};
@@ -2448,7 +2448,7 @@ if(!LITE){
 /* نهاية p11.js */
 
 /* ============ p12: وحدات التعبئة (قطعة، دزينة، كرتونة…) من نموذج المنتج ============ */
-const UPK=EDITION==='shop'||BUILD;
+const UPK=EDITION==='shop'||EDITION==='acc'||BUILD;
 const unitsOf=p=>String(p&&p.units||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean).map(parseOpt).filter(u=>u.f>0);
 const bigUnit=p=>unitsOf(p).filter(u=>u.f>1).sort((a,b)=>b.f-a.f)[0];
 function unitBreak(p,q){const u=bigUnit(p);if(!u||!(q>0))return '';const n=Math.floor(q/u.f+1e-9),r=r3(q-n*u.f);return n?`${fmt(n)} ${u.n}${r?' + '+fq(r):''}`:''}
