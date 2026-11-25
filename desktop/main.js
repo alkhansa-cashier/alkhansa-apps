@@ -33,7 +33,7 @@ ipcMain.handle('printers', async () => {
 // طباعة صورة الفاتورة بعرض الورق مباشرة بدون نافذة
 ipcMain.handle('print', async (e, o) => {
   const w = o.widthMm || 80, pm = Math.min(w, o.printMm || (w === 58 ? 48 : 72)), off = Math.max(0, +o.offMm || 0);
-  const h = Math.max(30, Math.ceil(pm * (o.ratio || 1.5)) + 4);
+  const h = o.hMm ? +o.hMm : Math.max(30, Math.ceil(pm * (o.ratio || 1.5)) + 4);
   const pw = new BrowserWindow({ show: false, webPreferences: { offscreen: false } });
   const html = `<!DOCTYPE html><html dir="ltr"><head><style>@page{size:${w}mm ${h}mm;margin:0}html,body{margin:0;padding:0}img{width:${pm}mm;display:block;margin-left:${off}mm;image-rendering:pixelated}</style></head><body><img src="${o.img}"></body></html>`;
   await pw.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));

@@ -27,7 +27,7 @@ function bkFolder_(dev) {
 function bkFiles_(fo) {
   const files = [], it = fo.getFiles();
   while (it.hasNext()) files.push(it.next());
-  files.sort((a, b) => b.getDateCreated().getTime() - a.getDateCreated().getTime());
+  files.sort((a, b) => b.getLastUpdated().getTime() - a.getLastUpdated().getTime());
   return files;
 }
 function bk_(p) {
@@ -43,7 +43,9 @@ function bk_(p) {
     }
     const fo = bkFolder_(dev);
     fo.setDescription(String(p.store || ''));
-    fo.createFile('backup-' + Utilities.formatDate(new Date(), 'Asia/Damascus', 'yyyy-MM-dd_HH-mm') + '.json', p.data, 'application/json');
+    const name = 'backup-' + Utilities.formatDate(new Date(), 'Asia/Damascus', 'yyyy-MM-dd') + '.json';
+    const same = fo.getFilesByName(name);
+    if (same.hasNext()) same.next().setContent(p.data); else fo.createFile(name, p.data, 'application/json');
     const files = bkFiles_(fo);
     files.slice(BK_KEEP).forEach(f => f.setTrashed(true));
     const row = ["'" + dev, p.store || '', "'" + key, new Date(), Math.round(p.data.length / 1024), Math.min(files.length, BK_KEEP), p.kind || ''];
@@ -61,6 +63,6 @@ function bkget_(p) {
   if (k !== key) return { ok: false, msg: 'رمز الاسترجاع غلط' };
   const files = bkFiles_(bkFolder_(dev));
   if (!files.length) return { ok: false, msg: 'ما في نسخ لهالجهاز' };
-  return { ok: true, data: files[0].getBlob().getDataAsString(), t: files[0].getDateCreated().getTime() };
+  return { ok: true, data: files[0].getBlob().getDataAsString(), t: files[0].getLastUpdated().getTime() };
 }
 // نهاية الدفعة 3

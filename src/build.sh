@@ -1,6 +1,6 @@
 cd /home/claude/app && python3 - <<'PY'
 s=open('p4.js',encoding='utf8').read();m='/* ============ التشغيل ============ */';i=s.index(m)
-open('all.js','w',encoding='utf8').write(open('p2.js',encoding='utf8').read()+open('p3.js',encoding='utf8').read()+s[:i]+open('p5.js',encoding='utf8').read()+'\n'+open('p6.js',encoding='utf8').read()+'\n'+open('p7.js',encoding='utf8').read()+'\n'+open('p8.js',encoding='utf8').read()+'\n'+open('p9.js',encoding='utf8').read()+'\n'+open('p10.js',encoding='utf8').read()+'\n'+open('p11.js',encoding='utf8').read()+'\n'+open('p12.js',encoding='utf8').read()+'\n'+s[i:])
+open('all.js','w',encoding='utf8').write(open('p2.js',encoding='utf8').read()+open('p3.js',encoding='utf8').read()+s[:i]+open('p5.js',encoding='utf8').read()+'\n'+open('p6.js',encoding='utf8').read()+'\n'+open('p7.js',encoding='utf8').read()+'\n'+open('p8.js',encoding='utf8').read()+'\n'+open('p9.js',encoding='utf8').read()+'\n'+open('p10.js',encoding='utf8').read()+'\n'+open('p11.js',encoding='utf8').read()+'\n'+open('p12.js',encoding='utf8').read()+'\n'+open('p13.js',encoding='utf8').read()+'\n'+s[i:])
 PY
 node --check all.js || exit 1
 mkdir -p www www-rest www-orders www-acc www-phone www-pharm www-cloth www-build www-solar www-stat www-sweet www-bake www-vet www-whole
