@@ -1,0 +1,230 @@
+[
+ {
+  "dir": "www-acc",
+  "id": "com.khansaa.desktop",
+  "name": "AlKhansa",
+  "file": "AlKhansa-Windows-Setup"
+ },
+ {
+  "dir": "www-phone",
+  "id": "com.khansaa.desktop.phone",
+  "name": "AlKhansa-Phone",
+  "file": "AlKhansa-Phone-Windows-Setup"
+ },
+ {
+  "dir": "www-pharm",
+  "id": "com.khansaa.desktop.pharmacy",
+  "name": "AlKhansa-Pharmacy",
+  "file": "AlKhansa-Pharmacy-Windows-Setup"
+ },
+ {
+  "dir": "www-school",
+  "id": "com.khansaa.desktop.school",
+  "name": "AlKhansa-School",
+  "file": "AlKhansa-School-Windows-Setup"
+ },
+ {
+  "dir": "www-quran",
+  "id": "com.khansaa.desktop.quran",
+  "name": "AlKhansa-Quran",
+  "file": "AlKhansa-Quran-Windows-Setup"
+ },
+ {
+  "dir": "www-dental",
+  "id": "com.khansaa.desktop.dental",
+  "name": "AlKhansa-Dental",
+  "file": "AlKhansa-Dental-Windows-Setup"
+ },
+ {
+  "dir": "www-clinic",
+  "id": "com.khansaa.desktop.clinic",
+  "name": "AlKhansa-Clinic",
+  "file": "AlKhansa-Clinic-Windows-Setup"
+ },
+ {
+  "dir": "www-lab",
+  "id": "com.khansaa.desktop.lab",
+  "name": "AlKhansa-Lab",
+  "file": "AlKhansa-Lab-Windows-Setup"
+ },
+ {
+  "dir": "www-salon",
+  "id": "com.khansaa.desktop.salon",
+  "name": "AlKhansa-Salon",
+  "file": "AlKhansa-Salon-Windows-Setup"
+ },
+ {
+  "dir": "www-gym",
+  "id": "com.khansaa.desktop.gym",
+  "name": "AlKhansa-Gym",
+  "file": "AlKhansa-Gym-Windows-Setup"
+ },
+ {
+  "dir": "www-rental",
+  "id": "com.khansaa.desktop.rental",
+  "name": "AlKhansa-Cars",
+  "file": "AlKhansa-Cars-Windows-Setup"
+ },
+ {
+  "dir": "www-estate",
+  "id": "com.khansaa.desktop.estate",
+  "name": "AlKhansa-RealEstate",
+  "file": "AlKhansa-RealEstate-Windows-Setup"
+ },
+ {
+  "dir": "www-ship",
+  "id": "com.khansaa.desktop.ship",
+  "name": "AlKhansa-Shipping",
+  "file": "AlKhansa-Shipping-Windows-Setup"
+ },
+ {
+  "dir": "www-cloth",
+  "id": "com.khansaa.desktop.cloth",
+  "name": "AlKhansa-Clothing",
+  "file": "AlKhansa-Clothing-Windows-Setup"
+ },
+ {
+  "dir": "www-build",
+  "id": "com.khansaa.desktop.build",
+  "name": "AlKhansa-Building",
+  "file": "AlKhansa-Building-Windows-Setup"
+ },
+ {
+  "dir": "www-solar",
+  "id": "com.khansaa.desktop.solar",
+  "name": "AlKhansa-Solar",
+  "file": "AlKhansa-Solar-Windows-Setup"
+ },
+ {
+  "dir": "www-print",
+  "id": "com.khansaa.desktop.print",
+  "name": "AlKhansa-Print",
+  "file": "AlKhansa-Print-Windows-Setup"
+ },
+ {
+  "dir": "www-furn",
+  "id": "com.khansaa.desktop.furn",
+  "name": "AlKhansa-Furniture",
+  "file": "AlKhansa-Furniture-Windows-Setup"
+ },
+ {
+  "dir": "www-stat",
+  "id": "com.khansaa.desktop.stat",
+  "name": "AlKhansa-Stationery",
+  "file": "AlKhansa-Stationery-Windows-Setup"
+ },
+ {
+  "dir": "www-sweet",
+  "id": "com.khansaa.desktop.sweet",
+  "name": "AlKhansa-Sweets",
+  "file": "AlKhansa-Sweets-Windows-Setup"
+ },
+ {
+  "dir": "www-bake",
+  "id": "com.khansaa.desktop.bake",
+  "name": "AlKhansa-Bakery",
+  "file": "AlKhansa-Bakery-Windows-Setup"
+ },
+ {
+  "dir": "www-vet",
+  "id": "com.khansaa.desktop.vet",
+  "name": "AlKhansa-Vet",
+  "file": "AlKhansa-Vet-Windows-Setup"
+ },
+ {
+  "dir": "www-law",
+  "id": "com.khansaa.desktop.law",
+  "name": "AlKhansa-Law",
+  "file": "AlKhansa-Law-Windows-Setup"
+ },
+ {
+  "dir": "www-acct",
+  "id": "com.khansaa.desktop.acct",
+  "name": "AlKhansa-AccOffice",
+  "file": "AlKhansa-AccOffice-Windows-Setup"
+ },
+ {
+  "dir": "www-travel",
+  "id": "com.khansaa.desktop.travel",
+  "name": "AlKhansa-Travel",
+  "file": "AlKhansa-Travel-Windows-Setup"
+ },
+ {
+  "dir": "www-contract",
+  "id": "com.khansaa.desktop.contract",
+  "name": "AlKhansa-Contracting",
+  "file": "AlKhansa-Contracting-Windows-Setup"
+ },
+ {
+  "dir": "www-tailor",
+  "id": "com.khansaa.desktop.tailor",
+  "name": "AlKhansa-Tailor",
+  "file": "AlKhansa-Tailor-Windows-Setup"
+ },
+ {
+  "dir": "www-water",
+  "id": "com.khansaa.desktop.water",
+  "name": "AlKhansa-Water",
+  "file": "AlKhansa-Water-Windows-Setup"
+ },
+ {
+  "dir": "www-game",
+  "id": "com.khansaa.desktop.game",
+  "name": "AlKhansa-Gaming",
+  "file": "AlKhansa-Gaming-Windows-Setup"
+ },
+ {
+  "dir": "www-gold",
+  "id": "com.khansaa.desktop.gold",
+  "name": "AlKhansa-Gold",
+  "file": "AlKhansa-Gold-Windows-Setup"
+ },
+ {
+  "dir": "www-auto",
+  "id": "com.khansaa.desktop.auto",
+  "name": "AlKhansa-AutoCare",
+  "file": "AlKhansa-AutoCare-Windows-Setup"
+ },
+ {
+  "dir": "www-train",
+  "id": "com.khansaa.desktop.train",
+  "name": "AlKhansa-Training",
+  "file": "AlKhansa-Training-Windows-Setup"
+ },
+ {
+  "dir": "www-gas",
+  "id": "com.khansaa.desktop.gas",
+  "name": "AlKhansa-Gas",
+  "file": "AlKhansa-Gas-Windows-Setup"
+ },
+ {
+  "dir": "www-nursery",
+  "id": "com.khansaa.desktop.nursery",
+  "name": "AlKhansa-Nursery",
+  "file": "AlKhansa-Nursery-Windows-Setup"
+ },
+ {
+  "dir": "www-poultry",
+  "id": "com.khansaa.desktop.poultry",
+  "name": "AlKhansa-Poultry",
+  "file": "AlKhansa-Poultry-Windows-Setup"
+ },
+ {
+  "dir": "www-cattle",
+  "id": "com.khansaa.desktop.cattle",
+  "name": "AlKhansa-Livestock",
+  "file": "AlKhansa-Livestock-Windows-Setup"
+ },
+ {
+  "dir": "www-charity",
+  "id": "com.khansaa.desktop.charity",
+  "name": "AlKhansa-Charity",
+  "file": "AlKhansa-Charity-Windows-Setup"
+ },
+ {
+  "dir": "www-whole",
+  "id": "com.khansaa.desktop.whole",
+  "name": "AlKhansa-Wholesale",
+  "file": "AlKhansa-Wholesale-Windows-Setup"
+ }
+]

@@ -1,0 +1,282 @@
+[
+ {
+  "ed": "orders",
+  "dir": "www-orders",
+  "id": "com.khansaa.orders",
+  "name": "الخنساء طلبات",
+  "file": "AlKhansa-Orders"
+ },
+ {
+  "ed": "rest",
+  "dir": "www-rest",
+  "id": "com.khansaa.restaurant",
+  "name": "الخنساء للمطاعم",
+  "file": "AlKhansa-Restaurant"
+ },
+ {
+  "ed": "shop",
+  "dir": "www",
+  "id": "com.khansaa.cashier",
+  "name": "الخنساء كاشير",
+  "file": "AlKhansa-Cashier"
+ },
+ {
+  "ed": "phone",
+  "dir": "www-phone",
+  "id": "com.khansaa.phone",
+  "name": "الخنساء موبايل",
+  "file": "AlKhansa-Phone"
+ },
+ {
+  "ed": "pharm",
+  "dir": "www-pharm",
+  "id": "com.khansaa.pharmacy",
+  "name": "الخنساء صيدلية",
+  "file": "AlKhansa-Pharmacy"
+ },
+ {
+  "ed": "school",
+  "dir": "www-school",
+  "id": "com.khansaa.school",
+  "name": "الخنساء مدارس",
+  "file": "AlKhansa-School"
+ },
+ {
+  "ed": "quran",
+  "dir": "www-quran",
+  "id": "com.khansaa.quran",
+  "name": "الخنساء معاهد",
+  "file": "AlKhansa-Quran"
+ },
+ {
+  "ed": "dental",
+  "dir": "www-dental",
+  "id": "com.khansaa.dental",
+  "name": "الخنساء أسنان",
+  "file": "AlKhansa-Dental"
+ },
+ {
+  "ed": "clinic",
+  "dir": "www-clinic",
+  "id": "com.khansaa.clinic",
+  "name": "الخنساء عيادات",
+  "file": "AlKhansa-Clinic"
+ },
+ {
+  "ed": "lab",
+  "dir": "www-lab",
+  "id": "com.khansaa.lab",
+  "name": "الخنساء مخابر",
+  "file": "AlKhansa-Lab"
+ },
+ {
+  "ed": "salon",
+  "dir": "www-salon",
+  "id": "com.khansaa.salon",
+  "name": "الخنساء صالونات",
+  "file": "AlKhansa-Salon"
+ },
+ {
+  "ed": "gym",
+  "dir": "www-gym",
+  "id": "com.khansaa.gym",
+  "name": "الخنساء نوادي",
+  "file": "AlKhansa-Gym"
+ },
+ {
+  "ed": "rental",
+  "dir": "www-rental",
+  "id": "com.khansaa.rental",
+  "name": "الخنساء سيارات",
+  "file": "AlKhansa-Cars"
+ },
+ {
+  "ed": "estate",
+  "dir": "www-estate",
+  "id": "com.khansaa.estate",
+  "name": "الخنساء عقارات",
+  "file": "AlKhansa-RealEstate"
+ },
+ {
+  "ed": "ship",
+  "dir": "www-ship",
+  "id": "com.khansaa.shipping",
+  "name": "الخنساء شحن",
+  "file": "AlKhansa-Shipping"
+ },
+ {
+  "ed": "cloth",
+  "dir": "www-cloth",
+  "id": "com.khansaa.clothing",
+  "name": "الخنساء ألبسة",
+  "file": "AlKhansa-Clothing"
+ },
+ {
+  "ed": "build",
+  "dir": "www-build",
+  "id": "com.khansaa.building",
+  "name": "الخنساء مواد بناء",
+  "file": "AlKhansa-Building"
+ },
+ {
+  "ed": "solar",
+  "dir": "www-solar",
+  "id": "com.khansaa.solar",
+  "name": "الخنساء طاقة شمسية",
+  "file": "AlKhansa-Solar"
+ },
+ {
+  "ed": "print",
+  "dir": "www-print",
+  "id": "com.khansaa.print",
+  "name": "الخنساء مطابع",
+  "file": "AlKhansa-Print"
+ },
+ {
+  "ed": "furn",
+  "dir": "www-furn",
+  "id": "com.khansaa.furniture",
+  "name": "الخنساء أثاث",
+  "file": "AlKhansa-Furniture"
+ },
+ {
+  "ed": "stat",
+  "dir": "www-stat",
+  "id": "com.khansaa.stationery",
+  "name": "الخنساء مكتبات",
+  "file": "AlKhansa-Stationery"
+ },
+ {
+  "ed": "sweet",
+  "dir": "www-sweet",
+  "id": "com.khansaa.sweets",
+  "name": "الخنساء حلويات",
+  "file": "AlKhansa-Sweets"
+ },
+ {
+  "ed": "bake",
+  "dir": "www-bake",
+  "id": "com.khansaa.bakery",
+  "name": "الخنساء أفران",
+  "file": "AlKhansa-Bakery"
+ },
+ {
+  "ed": "vet",
+  "dir": "www-vet",
+  "id": "com.khansaa.vet",
+  "name": "الخنساء بيطري",
+  "file": "AlKhansa-Vet"
+ },
+ {
+  "ed": "law",
+  "dir": "www-law",
+  "id": "com.khansaa.law",
+  "name": "الخنساء محاماة",
+  "file": "AlKhansa-Law"
+ },
+ {
+  "ed": "acct",
+  "dir": "www-acct",
+  "id": "com.khansaa.accoffice",
+  "name": "الخنساء مكاتب محاسبة",
+  "file": "AlKhansa-AccOffice"
+ },
+ {
+  "ed": "travel",
+  "dir": "www-travel",
+  "id": "com.khansaa.travel",
+  "name": "الخنساء سياحة وسفر",
+  "file": "AlKhansa-Travel"
+ },
+ {
+  "ed": "contract",
+  "dir": "www-contract",
+  "id": "com.khansaa.contracting",
+  "name": "الخنساء مقاولات",
+  "file": "AlKhansa-Contracting"
+ },
+ {
+  "ed": "tailor",
+  "dir": "www-tailor",
+  "id": "com.khansaa.tailor",
+  "name": "الخنساء خياطة",
+  "file": "AlKhansa-Tailor"
+ },
+ {
+  "ed": "water",
+  "dir": "www-water",
+  "id": "com.khansaa.water",
+  "name": "الخنساء مياه",
+  "file": "AlKhansa-Water"
+ },
+ {
+  "ed": "game",
+  "dir": "www-game",
+  "id": "com.khansaa.gaming",
+  "name": "الخنساء ألعاب",
+  "file": "AlKhansa-Gaming"
+ },
+ {
+  "ed": "gold",
+  "dir": "www-gold",
+  "id": "com.khansaa.gold",
+  "name": "الخنساء ذهب",
+  "file": "AlKhansa-Gold"
+ },
+ {
+  "ed": "auto",
+  "dir": "www-auto",
+  "id": "com.khansaa.autocare",
+  "name": "الخنساء صيانة سيارات",
+  "file": "AlKhansa-AutoCare"
+ },
+ {
+  "ed": "train",
+  "dir": "www-train",
+  "id": "com.khansaa.training",
+  "name": "الخنساء تدريب",
+  "file": "AlKhansa-Training"
+ },
+ {
+  "ed": "gas",
+  "dir": "www-gas",
+  "id": "com.khansaa.gas",
+  "name": "الخنساء غاز ومحروقات",
+  "file": "AlKhansa-Gas"
+ },
+ {
+  "ed": "nursery",
+  "dir": "www-nursery",
+  "id": "com.khansaa.nursery",
+  "name": "الخنساء حضانات",
+  "file": "AlKhansa-Nursery"
+ },
+ {
+  "ed": "poultry",
+  "dir": "www-poultry",
+  "id": "com.khansaa.poultry",
+  "name": "الخنساء دواجن",
+  "file": "AlKhansa-Poultry"
+ },
+ {
+  "ed": "cattle",
+  "dir": "www-cattle",
+  "id": "com.khansaa.livestock",
+  "name": "الخنساء مواشي",
+  "file": "AlKhansa-Livestock"
+ },
+ {
+  "ed": "charity",
+  "dir": "www-charity",
+  "id": "com.khansaa.charity",
+  "name": "الخنساء جمعيات خيرية",
+  "file": "AlKhansa-Charity"
+ },
+ {
+  "ed": "whole",
+  "dir": "www-whole",
+  "id": "com.khansaa.wholesale",
+  "name": "الخنساء جملة",
+  "file": "AlKhansa-Wholesale"
+ }
+]

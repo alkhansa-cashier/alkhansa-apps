@@ -1,0 +1,74 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'النسخ المطلوبة مفصولة بفاصلة (مثلاً shop,rest) أو all'
+        required: true
+        default: 'shop'
+
+permissions:
+  contents: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      m: ${{ steps.p.outputs.m }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json
+          inc=json.load(open('.github/editions-win.json'))
+          only=[x.strip() for x in '${{ inputs.only }}'.split(',') if x.strip()]
+          if 'all' not in only:
+              inc=[m for m in inc if m.get('ed') in only or m.get('dir') in only or m.get('file') in only or m.get('dir','').replace('www-','')in only or (m.get('dir')=='www' and 'shop' in only)]
+          print('m='+json.dumps(inc,ensure_ascii=False))
+          EOF
+  windows:
+    runs-on: windows-latest
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.m) }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Copy app
+        shell: bash
+        run: |
+          mkdir -p desktop/app
+          cp ${{ matrix.dir }}/index.html desktop/app/index.html
+
+      - name: Install and build
+        shell: bash
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npm install
+          npx electron-builder --win --publish never -c.appId=${{ matrix.id }} -c.productName=${{ matrix.name }} -c.nsis.shortcutName=${{ matrix.name }}
+          ls dist
+
+      - name: Rename
+        shell: bash
+        run: cp desktop/dist/*.exe ${{ matrix.file }}-${{ github.run_number }}.exe
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows-${{ github.run_number }}
+          name: AlKhansa Windows ${{ github.run_number }}
+          files: ${{ matrix.file }}-${{ github.run_number }}.exe
+          prerelease: true
+# نهاية الملف: desktop.yml

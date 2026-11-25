@@ -1,0 +1,112 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'النسخ المطلوبة مفصولة بفاصلة (مثلاً shop,rest) أو all'
+        required: true
+        default: 'shop'
+
+permissions:
+  contents: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      m: ${{ steps.p.outputs.m }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json
+          inc=json.load(open('.github/editions-apk.json'))
+          only=[x.strip() for x in '${{ inputs.only }}'.split(',') if x.strip()]
+          if 'all' not in only:
+              inc=[m for m in inc if m.get('ed') in only or m.get('dir') in only or m.get('file') in only or m.get('dir','').replace('www-','')in only or (m.get('dir')=='www' and 'shop' in only)]
+          print('m='+json.dumps(inc,ensure_ascii=False))
+          EOF
+  build:
+    runs-on: ubuntu-latest
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.m) }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # مفتاح التوقيع الثابت (محفوظ بأسرار GitHub باسم KEYSTORE_B64)
+      - name: Signing key
+        env:
+          KS: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          mkdir -p signing
+          if [ -n "$KS" ]; then echo "$KS" | base64 -d > signing/debug.keystore; fi
+          test -s signing/debug.keystore || { echo "KEYSTORE_B64 secret is missing"; exit 1; }
+          keytool -list -keystore signing/debug.keystore -storepass android | grep -i fingerprint
+
+      - name: App config
+        run: |
+          printf '{\n  "appId": "%s",\n  "appName": "%s",\n  "webDir": "%s"\n}\n' "${{ matrix.id }}" "${{ matrix.name }}" "${{ matrix.dir }}" > capacitor.config.json
+          cat capacitor.config.json
+
+      - name: Install packages
+        run: npm install
+
+      - name: Add Android
+        run: npx cap add android
+
+      - name: App icon (Al-Khansaa logo)
+        run: |
+          R=android/app/src/main/res
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do cp icons/android/mipmap-$d/*.png $R/mipmap-$d/; done
+          if [ -f $R/values/ic_launcher_background.xml ]; then sed -i 's#<color name="ic_launcher_background">[^<]*</color>#<color name="ic_launcher_background">\#FFFFFF</color>#' $R/values/ic_launcher_background.xml; fi
+
+      - name: Permissions and version
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q 'xmlns:tools' $M || sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android"#<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"#' $M
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />\n</manifest>#' $M
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i '0,/^android {/s//android {\n    signingConfigs {\n        khansa {\n            storeFile rootProject.file("..\/signing\/debug.keystore")\n            storePassword "android"\n            keyAlias "androiddebugkey"\n            keyPassword "android"\n        }\n    }/' android/app/build.gradle
+          sed -i '0,/release {/s//release {\n            signingConfig signingConfigs.khansa/' android/app/build.gradle
+          grep -n -A8 "signingConfigs {" android/app/build.gradle
+          grep -n -A3 "release {" android/app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.1.${{ github.run_number }}\"/" android/app/build.gradle
+          cat $M
+
+      - name: Copy web files
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk ${{ matrix.file }}-${{ github.run_number }}.apk
+
+      - name: Publish APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: AlKhansa build ${{ github.run_number }}
+          files: ${{ matrix.file }}-${{ github.run_number }}.apk
+          prerelease: true
+# نهاية الملف: build.yml

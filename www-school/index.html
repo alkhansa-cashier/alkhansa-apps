@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14233F">
+<title>الخنساء لإدارة المدارس</title>
+<style>
+:root{--bg:#EEF1F6;--card:#fff;--ink:#121A2B;--mut:#5E6A80;--line:#DCE1EA;--soft:#E7ECF4;--pri:#14233F;--onpri:#fff;--gold:#C9962E;--ok:#1F8A5B;--okbg:#DDF3E8;--bad:#C93B2B;--badbg:#FBE3DF;--low:#B56A00;--lowbg:#FFEFD2;--blue:#2F6FD6;--bluebg:#E3EDFC}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer;padding:0}
+b,h1,h2,h3{font-weight:800}
+svg.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#app{height:100%;display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
+.side{display:none}
+.hd{background:var(--pri);color:#fff;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;min-height:56px}
+.hd h1{font-size:18px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd .ib{background:rgba(255,255,255,.14)}
+.ib{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.main{overflow-y:auto;padding:14px 14px 90px}
+.nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:12px;color:var(--mut);font-size:11.5px;font-weight:700}
+.nav button.on{color:var(--pri);background:var(--soft)}
+@media (min-width:900px){
+ #app{grid-template-columns:230px 1fr;grid-template-rows:auto 1fr}
+ .side{display:flex;flex-direction:column;grid-row:1/3;background:var(--pri);color:#fff;padding:18px 10px;gap:4px;overflow-y:auto}
+ .side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:10px}
+ .side .brand img{width:44px;height:44px;border-radius:10px;background:#fff;object-fit:contain}
+ .side .brand b{font-size:15px;line-height:1.3}.side .brand small{display:block;opacity:.7;font-size:12px;font-weight:600}
+ .side button{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-weight:700;color:rgba(255,255,255,.8);text-align:start}
+ .side button.on{background:rgba(255,255,255,.14);color:#fff}.side button:hover{background:rgba(255,255,255,.08)}
+ .nav{display:none}.main{padding:22px 26px 40px}.hd{grid-column:2}
+ .g4{grid-template-columns:repeat(4,1fr)!important}.g3w{grid-template-columns:repeat(3,1fr)!important}
+}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g4,.g3w{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.kpi small{color:var(--mut);font-weight:700;display:flex;gap:6px;align-items:center}.kpi b{display:block;font-size:22px;margin-top:4px}
+.kpi.blue b{color:var(--blue)}.kpi.ok b{color:var(--ok)}.kpi.bad b{color:var(--bad)}.kpi.gold b{color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:11px 16px;font-weight:800;background:var(--soft)}
+.btn.pri{background:var(--pri);color:#fff}.btn.ok{background:var(--ok);color:#fff}.btn.bad{color:var(--bad)}.btn.wide{width:100%}.btn.sm{padding:7px 11px;font-size:13px;border-radius:10px}
+.btn.wa{background:#1FA855;color:#fff}
+.mt{margin-top:12px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
+.li{display:flex;align-items:center;gap:12px;width:100%;text-align:start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.li .gr{flex:1;min-width:0}.li .gr b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.li small{color:var(--mut)}
+.av{width:42px;height:42px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--pri);flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.badge{font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px;background:var(--soft);white-space:nowrap}
+.badge.ok{background:var(--okbg);color:var(--ok)}.badge.bad{background:var(--badbg);color:var(--bad)}.badge.low{background:var(--lowbg);color:var(--low)}.badge.blue{background:var(--bluebg);color:var(--blue)}
+.f{display:block;margin-bottom:10px;font-size:13px;font-weight:700;color:var(--mut)}
+.f input,.f select,.f textarea,.inp{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1.5px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);font-size:15px;font-weight:500}
+.f textarea{min-height:70px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:6px 13px;font-weight:700;font-size:13.5px}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.seg{display:flex;background:var(--soft);border-radius:11px;padding:3px;gap:3px}.seg button{flex:1;padding:7px 6px;border-radius:9px;font-weight:700;font-size:13.5px}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.srch{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;margin-bottom:10px}
+.srch input{flex:1;border:0;background:none;padding:11px 0;outline:none}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}.empty svg{width:40px;height:40px;opacity:.5}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}.kv:last-child{border:0}.kv span{color:var(--mut)}
+table.t{width:100%;border-collapse:collapse;background:var(--card);font-size:14px}
+table.t th,table.t td{border:1px solid var(--line);padding:7px 8px;text-align:center}table.t th{background:var(--soft);font-weight:800}
+table.t td.nm{text-align:start;white-space:nowrap}
+.tw{overflow-x:auto;border-radius:12px;border:1px solid var(--line);margin-bottom:12px}
+.mk{width:62px;padding:6px;border:1.5px solid var(--line);border-radius:8px;text-align:center;background:var(--card)}
+.att{display:flex;gap:4px}.att button{width:36px;height:34px;border-radius:9px;background:var(--soft);font-weight:800;font-size:13px}
+.att button.p.on{background:var(--ok);color:#fff}.att button.a.on{background:var(--bad);color:#fff}.att button.l.on{background:var(--low);color:#fff}.att button.e.on{background:var(--blue);color:#fff}
+.fab{position:fixed;inset-inline-start:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--gold);color:#1b1403;border-radius:16px;padding:13px 18px;font-weight:800;display:flex;gap:8px;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:5}
+@media (min-width:900px){.fab{bottom:26px}}
+.shade{position:fixed;inset:0;background:rgba(8,14,26,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:620px;max-height:92%;overflow-y:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+@media (min-width:900px){.shade{align-items:center}.sheet{border-radius:22px}}
+.sheet h3{margin:0 0 12px}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#121A2B;color:#fff;padding:10px 18px;border-radius:12px;z-index:50;font-weight:700;max-width:90%}
+.bar{height:8px;border-radius:8px;background:var(--soft);overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.prof{display:flex;gap:14px;align-items:center}.prof .ph{width:84px;height:84px;border-radius:18px;background:var(--soft);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:var(--pri)}
+.prof .ph img{width:100%;height:100%;object-fit:cover}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.docs label{display:flex;gap:8px;align-items:center;background:var(--soft);border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:700}
+.tt td{min-width:90px;height:44px;font-size:12.5px}.tt td.x{cursor:pointer}
+#print{display:none}
+@media print{
+ body{background:#fff}#app,.toast,.shade{display:none!important}#print{display:block}
+ @page{size:A4;margin:12mm}
+ .pg{page-break-after:always;font-size:13px;color:#000}.pg:last-child{page-break-after:auto}
+ .ph1{display:flex;align-items:center;gap:14px;border-bottom:3px double #000;padding-bottom:8px;margin-bottom:12px}
+ .ph1 img{width:70px;height:70px;object-fit:contain}.ph1 h2{margin:0;font-size:20px}.ph1 .sp{flex:1}
+ .pt{width:100%;border-collapse:collapse;margin:8px 0}.pt th,.pt td{border:1px solid #000;padding:5px 7px;text-align:center}.pt th{background:#eee}
+ .pkv{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px}.pkv div{border-bottom:1px dotted #999;padding:3px 0}
+ .sig{display:flex;justify-content:space-between;margin-top:40px}
+ .idc{display:inline-block;width:85mm;height:54mm;border:1.5px solid #000;border-radius:3mm;margin:3mm;padding:3mm;vertical-align:top;position:relative;overflow:hidden}
+ .idc .top{background:#14233F;color:#fff;margin:-3mm -3mm 2mm;padding:2mm 3mm;font-weight:800;font-size:12px;display:flex;align-items:center;gap:6px}
+ .idc img.p{width:22mm;height:26mm;object-fit:cover;border:1px solid #000;float:left}
+ .cert{border:6px double #14233F;padding:20mm;text-align:center;min-height:240mm}.cert h1{font-size:34px;margin:10mm 0}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="print"></div>
+<script>
+/* ============ الخنساء للتعليم: الأساس ============ */
+const ED='school',Q=ED==='quran',VERSION='1.0.0';
+const APPNAME=Q?'الخنساء للمعاهد والحلقات':'الخنساء لإدارة المدارس';
+const L=Q?{cls:'حلقة',clsP:'الحلقات',tch:'الأستاذ',tchP:'الأساتذة',stu:'طالب',stuP:'الطلاب',fees:'الاشتراكات'}:{cls:'صف',clsP:'الصفوف',tch:'المعلم',tchP:'الكادر التدريسي',stu:'طالب',stuP:'الطلاب',fees:'الأقساط'};
+const KEY='kh_edu_'+ED;
+const SURAS='الفاتحة البقرة آل_عمران النساء المائدة الأنعام الأعراف الأنفال التوبة يونس هود يوسف الرعد إبراهيم الحجر النحل الإسراء الكهف مريم طه الأنبياء الحج المؤمنون النور الفرقان الشعراء النمل القصص العنكبوت الروم لقمان السجدة الأحزاب سبأ فاطر يس الصافات ص الزمر غافر فصلت الشورى الزخرف الدخان الجاثية الأحقاف محمد الفتح الحجرات ق الذاريات الطور النجم القمر الرحمن الواقعة الحديد المجادلة الحشر الممتحنة الصف الجمعة المنافقون التغابن الطلاق التحريم الملك القلم الحاقة المعارج نوح الجن المزمل المدثر القيامة الإنسان المرسلات النبأ النازعات عبس التكوير الانفطار المطففين الانشقاق البروج الطارق الأعلى الغاشية الفجر البلد الشمس الليل الضحى الشرح التين العلق القدر البينة الزلزلة العاديات القارعة التكاثر العصر الهمزة الفيل قريش الماعون الكوثر الكافرون النصر المسد الإخلاص الفلق الناس'.split(' ').map(s=>s.replace(/_/g,' '));
+const AYAT=[7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+const GRADES=['ممتاز','جيد جداً','جيد','مقبول','يعاد'];
+const DOCS_S=['صورة شخصية','شهادة ميلاد / قيد نفوس','صورة دفتر العائلة','صورة هوية الولي','بطاقة اللقاح','وثيقة نقل / تسلسل','الجلاء السابق','تعهد ولي الأمر'];
+const DOCS_Q=['صورة شخصية','صورة هوية الولي','موافقة ولي الأمر'];
+const SUBJ=['التربية الإسلامية','اللغة العربية','الرياضيات','العلوم','اللغة الإنكليزية','الاجتماعيات','الفيزياء والكيمياء','اللغة الفرنسية','التربية الفنية','التربية الرياضية','المعلوماتية'];
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','السبت'];
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toLatin=s=>String(s==null?'':s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.');
+const num=v=>{const n=parseFloat(toLatin(v).replace(/[^\d.\-]/g,''));return isFinite(n)?n:0};
+const fmt=n=>Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
+const p2=n=>String(n).padStart(2,'0');
+const isoD=t=>{const d=new Date(t);return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`};
+const dt=t=>{const d=new Date(t);return `${isoD(t)} ${p2(d.getHours())}:${p2(d.getMinutes())}`};
+const today=()=>isoD(Date.now());
+const norm=s=>toLatin(String(s||'').toLowerCase()).replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
+const val=id=>{const e=$('#'+id);return e?String(e.value).trim():''};
+const money=v=>fmt(Math.round(v||0))+' '+(S().cur||'ل.س');
+const age=b=>{if(!b)return '';const d=new Date(b),n=new Date();let a=n.getFullYear()-d.getFullYear();if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;return a>=0&&a<100?a:''};
+
+const fresh=()=>({set:{name:'',phone:'',addr:'',manager:'',year:(new Date().getFullYear())+'-'+(new Date().getFullYear()+1),cur:'ل.س',logo:'',terms:['الفصل الأول','الفصل الثاني'],periods:Q?3:7,days:Q?['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس']:DAYS.slice(0,5),docs:Q?DOCS_Q:DOCS_S,feesOn:!Q,pass:50},
+ classes:[],students:[],teachers:[],att:{},exams:[],marks:{},pays:[],tpays:[],exps:[],tt:{},hifz:[],tests:[],log:[],seq:0,rseq:0,ready:false});
+let DB;try{DB=Object.assign(fresh(),JSON.parse(localStorage.getItem(KEY)||'{}'));DB.set=Object.assign(fresh().set,DB.set||{})}catch(e){DB=fresh()}
+const S=()=>DB.set;
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(flush,250)}
+function flush(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('الذاكرة ممتلئة! خفف الصور أو خذ نسخة احتياطية',6000)}}
+function logA(x){DB.log.unshift({t:Date.now(),x});if(DB.log.length>800)DB.log.length=800}
+function toast(m,ms){const o=$('.toast');if(o)o.remove();const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),ms||2600)}
+
+const stuById=id=>DB.students.find(s=>s.id===id);
+const clsById=id=>DB.classes.find(c=>c.id===id);
+const tchById=id=>DB.teachers.find(t=>t.id===id);
+const clsName=id=>{const c=clsById(id);return c?c.name:'بدون '+L.cls};
+const active=()=>DB.students.filter(s=>s.status!=='left');
+const inCls=cid=>active().filter(s=>s.cid===cid).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+/* الأقساط */
+const feeOf=s=>{const c=clsById(s.cid);const f=s.fee!=null&&s.fee!==''?+s.fee:(c?+c.fee||0:0);return Math.max(0,f-(+s.disc||0))};
+const paidOf=sid=>DB.pays.filter(p=>p.sid===sid).reduce((a,p)=>a+p.amt,0);
+const dueOf=s=>Math.max(0,feeOf(s)-paidOf(s.id));
+/* الحضور */
+const attKey=(d,cid)=>d+'|'+cid;
+function attStats(sid){let p=0,a=0,l=0,e=0;for(const [k,v] of Object.entries(DB.att)){const x=v[sid];if(x==='p')p++;else if(x==='a')a++;else if(x==='l')l++;else if(x==='e')e++}return {p,a,l,e,n:p+a+l+e}}
+/* الحفظ */
+const hifzOf=sid=>DB.hifz.filter(h=>h.sid===sid).sort((a,b)=>b.t-a.t);
+const pagesOf=sid=>DB.hifz.filter(h=>h.sid===sid&&h.type==='h').reduce((a,h)=>a+(+h.pages||0),0);
+const juzOf=sid=>Math.min(30,Math.round(pagesOf(sid)/20*10)/10);
+const posTxt=h=>h?`${SURAS[h.s2]||''} ${h.a2||''}`:'—';
+
+const I={home:'M3 11l9-8 9 8 M5 10v10h14V10',users:'M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 20v-2a4 4 0 0 0-3-3.9 M16 2.1a4 4 0 0 1 0 7.8',cls:'M3 4h18v12H3z M8 20h8 M12 16v4',check:'M20 6L9 17l-5-5',chart:'M3 3v18h18 M7 15l4-4 3 3 5-6',money:'M2 6h20v12H2z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M6 12h.01 M18 12h.01',
+ tch:'M12 3L1 9l11 6 9-4.9V17 M5 11.5V16c0 1.7 3.1 3 7 3s7-1.3 7-3v-4.5',more:'M4 6h16 M4 12h16 M4 18h16',plus:'M12 5v14 M5 12h14',back:'M9 18l6-6-6-6',x:'M18 6L6 18 M6 6l12 12',search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16 M21 21l-4.3-4.3',print:'M6 9V2h12v7 M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2 M6 14h12v8H6z',
+ edit:'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',trash:'M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6',wa:'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z',cal:'M3 5h18v16H3z M16 3v4 M8 3v4 M3 10h18',book:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+ gear:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
+ file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8',card:'M2 5h20v14H2z M6 10h4 M6 14h8 M15 9h3v4h-3z',award:'M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14 M8.2 13.9L7 23l5-3 5 3-1.2-9.1',star:'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',down:'M12 3v12 M7 10l5 5 5-5 M5 21h14',up:'M12 21V9 M7 14l5-5 5 5 M5 3h14',bell:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9 M13.7 21a2 2 0 0 1-3.4 0'};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24"><path d="${I[n]||''}"/></svg>`;
+const empty=(i,t,s)=>`<div class="empty">${ic(i)}<div><b>${t}</b></div>${s?`<div>${s}</div>`:''}</div>`;
+const seg=(a,cur,items,k)=>`<div class="seg">${items.map(([v,t])=>`<button class="${String(cur)===String(v)?'on':''}" data-a="${a}" data-v="${esc(v)}"${k?` data-k="${k}"`:''}>${t}</button>`).join('')}</div>`;
+const avatar=s=>`<span class="av">${s.photo?`<img src="${s.photo}" alt="">`:esc((s.name||'?').trim()[0]||'?')}</span>`;
+const clsOpts=(sel,all)=>(all?`<option value="">${all}</option>`:'')+DB.classes.map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${esc(c.name)}</option>`).join('');
+
+/* ============ التنقل ============ */
+let tab='home';const stack=[];const ui={q:'',cf:'',ad:today(),ac:'',ec:'',fc:'',fq:'',hc:''};
+const NAV=()=>[['home','الرئيسية','home'],['stu',L.stuP,'users'],['att','الحضور','check'],Q?['hifz','الحفظ','book']:['grades','العلامات','chart'],...(S().feesOn?[['fees',L.fees,'money']]:[]),['more','المزيد','more']];
+function go(name,p,sheet){stack.push({name,p:p||{},sheet:!!sheet});try{history.pushState({n:stack.length},'')}catch(e){}render()}
+let skipPop=0;function back(){if(!stack.length)return;stack.pop();skipPop++;try{history.back()}catch(e){skipPop--}render()}
+window.addEventListener('popstate',()=>{if(skipPop>0){skipPop--;return}if(stack.length){stack.pop();render()}else if(tab!=='home'){tab='home';render();try{history.pushState({},'')}catch(e){}}});
+const top_=()=>stack[stack.length-1];
+const head=(t,right,bk)=>`<header class="hd">${bk?`<button class="ib" data-a="back">${ic('back')}</button>`:''}<h1>${esc(t)}</h1>${right||''}</header>`;
+function render(){const app=$('#app');if(!DB.ready&&!stack.length){stack.push({name:'setup',p:{},sheet:false})}
+ const full=[...stack].reverse().find(x=>!x.sheet),t=top_();const m=$('.main'),sc=m?m.scrollTop:0,same=app.dataset.v===(full?full.name:'t-'+tab);
+ let h=`<aside class="side"><div class="brand">${S().logo?`<img src="${S().logo}">`:''}<div><b>${esc(S().name||APPNAME)}</b><small>${esc(S().year||'')}</small></div></div>${NAV().map(([k,n,i])=>`<button class="${!full&&tab===k?'on':''}" data-a="tab" data-v="${k}">${ic(i)}${n}</button>`).join('')}</aside>`;
+ h+=full?P[full.name](full.p):V[tab]();
+ h+=`<nav class="nav">${NAV().map(([k,n,i])=>`<button class="${!full&&tab===k?'on':''}" data-a="tab" data-v="${k}">${ic(i)}<span>${n}</span></button>`).join('')}</nav>`;
+ if(t&&t.sheet)h+=`<div class="shade" data-a="shade"><div class="sheet">${SH[t.name](t.p)}</div></div>`;
+ app.innerHTML=h;app.dataset.v=full?full.name:'t-'+tab;if(same){const m2=$('.main');if(m2)m2.scrollTop=sc}
+ const f=$('[data-focus]');if(f)setTimeout(()=>{try{f.focus()}catch(e){}},60)}
+const V={},P={},SH={},A={},IN={};
+A.tab=d=>{tab=d.v;stack.length=0;try{history.go(-(history.length>1?0:0))}catch(e){}render()};
+A.back=()=>back();A.shade=(d,el,e)=>{if(e.target===el)back()};
+A.open=d=>go(d.v,{id:d.id});A.sheet=d=>go(d.v,{id:d.id,k:d.k},true);
+A.set=(d,el)=>{ui[d.k]=d.v;if(el)el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));if(!top_()||!top_().sheet||el.dataset.r)render()};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;const f=A[el.dataset.a];if(f){if(el.dataset.a!=='shade')e.preventDefault();f(el.dataset,el,e)}});
+document.addEventListener('input',e=>{const el=e.target.closest('[data-i]');if(el&&IN[el.dataset.i])IN[el.dataset.i](el.value,el)});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-c]');if(el){ui[el.dataset.c]=el.value;render()}});
+/* نهاية e2.js */
+/* ============ الشاشات ============ */
+A.tab=d=>{tab=d.v;stack.length=0;render()};
+const kpi=(t,v,c,i)=>`<div class="kpi ${c||''}"><small>${ic(i||'chart')}${t}</small><b>${v}</b></div>`;
+V.home=()=>{const st=active(),td=today();let pres=0,tot=0;for(const c of DB.classes){const a=DB.att[attKey(td,c.id)];if(a)for(const v of Object.values(a)){tot++;if(v==='p'||v==='l')pres++}}
+ const m0=new Date();m0.setDate(1);m0.setHours(0,0,0,0);const mon=DB.pays.filter(p=>p.t>=+m0).reduce((a,p)=>a+p.amt,0),due=st.reduce((a,s)=>a+dueOf(s),0);
+ const boys=st.filter(s=>s.gender==='m').length,girls=st.filter(s=>s.gender==='f').length;
+ let h=head(S().name||APPNAME,`<span style="font-size:12px;opacity:.8">${esc(S().year)}</span>`)+`<main class="main">
+ <div class="g4">${kpi(L.stuP,st.length,'blue','users')}${kpi(L.clsP,DB.classes.length,'','cls')}${kpi('حضور اليوم',tot?Math.round(pres/tot*100)+'%':'لم يُسجَّل','ok','check')}${S().feesOn?kpi('محصّل هالشهر',money(mon),'gold','money'):kpi(L.tchP,DB.teachers.length,'','tch')}</div>`;
+ if(S().feesOn)h+=`<div class="g2 mt">${kpi('أقساط متبقية',money(due),'bad','money')}${kpi('ذكور / إناث',`${boys} / ${girls}`,'','users')}</div>`;
+ h+=`<div class="card mt"><h3>${ic('star')}إجراءات سريعة</h3><div class="g4">
+ <button class="btn" data-a="newstu">${ic('plus')} تسجيل ${L.stu}</button><button class="btn" data-a="tab" data-v="att">${ic('check')} تفقّد الحضور</button>
+ ${Q?`<button class="btn" data-a="tab" data-v="hifz">${ic('book')} تسميع</button>`:`<button class="btn" data-a="tab" data-v="grades">${ic('chart')} إدخال علامات</button>`}${S().feesOn?`<button class="btn" data-a="tab" data-v="fees">${ic('money')} قبض ${Q?'اشتراك':'قسط'}</button>`:`<button class="btn" data-a="open" data-v="classes">${ic('cls')} ${L.clsP}</button>`}</div></div>`;
+ h+=`<div class="card"><h3>${ic('cls')}${L.clsP}</h3>${DB.classes.length?DB.classes.map(c=>{const n=inCls(c.id).length,t=tchById(c.tid),a=DB.att[attKey(td,c.id)];return `<button class="li" data-a="open" data-v="cls" data-id="${c.id}"><span class="av">${ic(Q?'book':'cls')}</span><div class="gr"><b>${esc(c.name)}</b><small>${n} ${L.stu}${t?' · '+esc(t.name):''}</small></div>${a?'<span class="badge ok">تم التفقّد</span>':'<span class="badge low">لم يُتفقّد</span>'}</button>`}).join(''):empty('cls','ما في '+L.clsP+' بعد',`<button class="btn pri mt" data-a="sheet" data-v="clsform">${ic('plus')} إضافة ${L.cls}</button>`)}</div>`;
+ if(Q){const top=active().map(s=>[s,pagesOf(s.id)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,5);if(top.length)h+=`<div class="card"><h3>${ic('award')}الأوائل بالحفظ</h3>${top.map(([s,p],i)=>`<div class="kv"><span>${i+1}. ${esc(s.name)}</span><b>${fmt(p)} صفحة · ${juzOf(s.id)} جزء</b></div>`).join('')}</div>`}
+ return h+'</main>'};
+
+/* ---- الطلاب ---- */
+function stuFiltered(){const q=norm(ui.q),c=ui.cf;return DB.students.filter(s=>(ui.cf==='~left'?s.status==='left':s.status!=='left'&&(!c||s.cid===c))&&(!q||norm(s.name+' '+(s.father||'')+' '+(s.phone||'')+' '+(s.no||'')).includes(q))).sort((a,b)=>a.name.localeCompare(b.name,'ar'))}
+const stuLi=s=>{const d=S().feesOn?dueOf(s):0;return `<button class="li" data-a="open" data-v="student" data-id="${s.id}">${avatar(s)}<div class="gr"><b>${esc(s.name)}</b><small>${esc(clsName(s.cid))}${s.no?' · رقم '+s.no:''}${s.phone?' · '+esc(s.phone):''}</small></div>${Q?`<span class="badge blue">${juzOf(s.id)} جزء</span>`:''}${d>0?`<span class="badge bad">${money(d)}</span>`:''}</button>`};
+V.stu=()=>head(L.stuP,`<button class="ib" data-a="sheet" data-v="import" title="استيراد">${ic('down')}</button>`)+`<main class="main"><div class="srch">${ic('search')}<input data-i="q" value="${esc(ui.q)}" placeholder="ابحث بالاسم أو اسم الأب أو الهاتف أو الرقم"></div>
+ <div class="chips"><button class="chip ${!ui.cf?'on':''}" data-a="set" data-k="cf" data-v="" data-r="1">الكل (${active().length})</button>${DB.classes.map(c=>`<button class="chip ${ui.cf===c.id?'on':''}" data-a="set" data-k="cf" data-v="${c.id}" data-r="1">${esc(c.name)} (${inCls(c.id).length})</button>`).join('')}<button class="chip ${ui.cf==='~left'?'on':''}" data-a="set" data-k="cf" data-v="~left" data-r="1">المنقطعين</button></div>
+ <div id="stl">${stuList()}</div></main><button class="fab" data-a="newstu">${ic('plus')} تسجيل ${L.stu}</button>`;
+const stuList=()=>{const l=stuFiltered();return l.length?l.map(stuLi).join(''):empty('users',DB.students.length?'ما في نتائج':'ما في '+L.stuP+' بعد','سجّل أول '+L.stu+' بزر التسجيل')};
+IN.q=v=>{ui.q=v;const e=$('#stl');if(e)e.innerHTML=stuList()};
+
+P.student=p=>{const s=stuById(p.id);if(!s)return head(L.stu,'',true)+'<main class="main"></main>';const a=attStats(s.id),docs=S().docs||[],have=docs.filter(d=>s.docs&&s.docs[d]).length;
+ let h=head(s.name,`<button class="ib" data-a="sheet" data-v="stuform" data-id="${s.id}">${ic('edit')}</button>`,true)+`<main class="main">
+ <div class="card"><div class="prof"><div class="ph">${s.photo?`<img src="${s.photo}">`:esc(s.name[0]||'?')}</div><div class="sp"><h2 style="margin:0">${esc(s.name)}</h2><div style="color:var(--mut)">${esc(clsName(s.cid))}${s.no?' · رقم التسجيل '+s.no:''}</div>
+ <div class="row mt">${s.status==='left'?'<span class="badge bad">منقطع</span>':'<span class="badge ok">مستمر</span>'}${s.gender?`<span class="badge">${s.gender==='m'?'ذكر':'أنثى'}</span>`:''}${age(s.birth)!==''?`<span class="badge">${age(s.birth)} سنة</span>`:''}<span class="badge ${have===docs.length?'ok':'low'}">الأوراق ${have}/${docs.length}</span></div></div></div>
+ <div class="row mt"><button class="btn sm" data-a="pform" data-id="${s.id}">${ic('print')} استمارة التسجيل</button><button class="btn sm" data-a="pcard" data-id="${s.id}">${ic('card')} بطاقة ${L.stu}</button>${Q?`<button class="btn sm" data-a="pcert" data-id="${s.id}">${ic('award')} شهادة</button>`:`<button class="btn sm" data-a="preport" data-id="${s.id}">${ic('file')} الجلاء</button>`}${s.phone?`<button class="btn sm wa" data-a="wa" data-id="${s.id}">${ic('wa')} واتساب الأهل</button>`:''}</div></div>
+ <div class="card"><h3>${ic('file')}المعلومات</h3>${[['اسم الأب',s.father],['اسم الأم',s.mother],['تاريخ الميلاد',s.birth],['مكان الولادة',s.bplace],['الرقم الوطني',s.nid],['هاتف ولي الأمر',s.phone],['هاتف آخر',s.phone2],['العنوان',s.addr],['تاريخ التسجيل',s.join],['المدرسة السابقة',s.prev],['ملاحظات صحية',s.health],['ملاحظات',s.notes]].filter(x=>x[1]).map(([k,v])=>`<div class="kv"><span>${k}</span><b>${esc(v)}</b></div>`).join('')||'<div class="empty">ما في معلومات</div>'}</div>
+ <div class="card"><h3>${ic('file')}الأوراق المسلّمة</h3><div class="docs">${docs.map(d=>`<label><input type="checkbox" data-a="doc" data-id="${s.id}" data-v="${esc(d)}" ${s.docs&&s.docs[d]?'checked':''}> ${esc(d)}</label>`).join('')}</div></div>
+ <div class="card"><h3>${ic('check')}الحضور</h3><div class="g4">${kpi('حضور',a.p,'ok','check')}${kpi('غياب',a.a,'bad','x')}${kpi('تأخير',a.l,'','bell')}${kpi('غياب بعذر',a.e,'blue','file')}</div>${a.n?`<div class="bar mt"><i style="width:${Math.round((a.p+a.l)/a.n*100)}%"></i></div><small style="color:var(--mut)">نسبة الحضور ${Math.round((a.p+a.l)/a.n*100)}%</small>`:''}</div>`;
+ if(Q){const hl=hifzOf(s.id);h+=`<div class="card"><h3>${ic('book')}الحفظ والمراجعة<span class="sp"></span><button class="btn sm pri" data-a="hnew" data-id="${s.id}">${ic('plus')} تسميع</button></h3>
+  <div class="g2">${kpi('المحفوظ',fmt(pagesOf(s.id))+' صفحة','ok','book')}${kpi('الأجزاء',juzOf(s.id)+' / 30','gold','award')}</div><div class="bar mt"><i style="width:${juzOf(s.id)/30*100}%"></i></div>
+  ${hl.slice(0,15).map(x=>`<div class="kv"><span>${isoD(x.t)} · ${x.type==='h'?'حفظ':'مراجعة'}: ${esc(SURAS[x.s1]||'')} ${x.a1||''} ← ${esc(SURAS[x.s2]||'')} ${x.a2||''}</span><b>${x.pages?x.pages+' ص · ':''}${esc(x.grade||'')}</b></div>`).join('')}</div>
+  <div class="card"><h3>${ic('award')}السَّبر (اختبار الأجزاء)<span class="sp"></span><button class="btn sm" data-a="sheet" data-v="testform" data-id="${s.id}">${ic('plus')} سبر</button></h3>${DB.tests.filter(x=>x.sid===s.id).map(x=>`<div class="kv"><span>الجزء ${x.juz} · ${isoD(x.t)}</span><b>${x.mark}% · ${esc(x.grade||'')}</b></div>`).join('')||'<small style="color:var(--mut)">ما في اختبارات</small>'}</div>`}
+ else{const ex=DB.exams.filter(e=>e.cid===s.cid);h+=`<div class="card"><h3>${ic('chart')}العلامات</h3>${ex.length?ex.map(e=>{const m=(DB.marks[e.id]||{})[s.id]||{},c=clsById(e.cid),subs=(c&&c.subs)||[];let got=0,max=0;subs.forEach(sb=>{if(m[sb.n]!=null&&m[sb.n]!==''){got+=+m[sb.n];max+=+sb.max}});return `<div class="kv"><span>${esc(e.name)} · ${esc(e.term||'')}</span><b>${max?Math.round(got/max*1000)/10+'%':'—'}</b></div>`}).join(''):'<small style="color:var(--mut)">ما في امتحانات لهالصف</small>'}</div>`}
+ if(S().feesOn){const pl=DB.pays.filter(x=>x.sid===s.id).sort((a,b)=>b.t-a.t),fee=feeOf(s),pd=paidOf(s.id);h+=`<div class="card"><h3>${ic('money')}${L.fees}<span class="sp"></span><button class="btn sm pri" data-a="paynew" data-id="${s.id}">${ic('plus')} قبض</button></h3>
+  <div class="g2">${kpi('المطلوب',money(fee),'','money')}${kpi('المدفوع',money(pd),'ok','check')}</div><div class="kv mt"><span>المتبقي</span><b style="color:${fee-pd>0?'var(--bad)':'var(--ok)'}">${money(Math.max(0,fee-pd))}</b></div>${s.disc?`<div class="kv"><span>حسم</span><b>${money(s.disc)}</b></div>`:''}
+  ${pl.map(x=>`<div class="kv"><span>إيصال ${x.no} · ${isoD(x.t)}${x.note?' · '+esc(x.note):''}</span><b>${money(x.amt)} <button class="btn sm" data-a="prcpt" data-id="${x.id}">${ic('print')}</button></b></div>`).join('')}</div>`}
+ h+=`<button class="btn wide bad mt" data-a="stuleft" data-id="${s.id}">${s.status==='left'?'إعادة '+L.stu+' للدوام':'تسجيل انقطاع / نقل'}</button><button class="btn wide bad mt" data-a="studel" data-id="${s.id}">${ic('trash')} حذف نهائي</button></main>`;
+ return h};
+
+/* ---- الحضور ---- */
+V.att=()=>{const c=ui.ac||(DB.classes[0]||{}).id||'',d=ui.ad||today(),rec=DB.att[attKey(d,c)]||{},l=c?inCls(c):[];
+ const cnt={p:0,a:0,l:0,e:0};l.forEach(s=>{const v=rec[s.id];if(v)cnt[v]++});
+ return head('تفقّد الحضور')+`<main class="main"><div class="g2"><label class="f">${L.cls}<select class="inp" data-c="ac">${clsOpts(c)}</select></label><label class="f">التاريخ<input class="inp" type="date" data-c="ad" value="${d}"></label></div>
+ ${!DB.classes.length?empty('cls','أضف '+L.clsP+' أولاً'):!l.length?empty('users','ما في '+L.stuP+' بهال'+L.cls):`<div class="row" style="margin-bottom:10px"><span class="badge ok">حاضر ${cnt.p}</span><span class="badge bad">غائب ${cnt.a}</span><span class="badge low">متأخر ${cnt.l}</span><span class="badge blue">بعذر ${cnt.e}</span><span class="sp"></span><button class="btn sm" data-a="attall">${ic('check')} الكل حاضر</button></div>
+ ${l.map(s=>`<div class="li">${avatar(s)}<div class="gr"><b>${esc(s.name)}</b></div><div class="att">${[['p','ح'],['a','غ'],['l','ت'],['e','ع']].map(([k,t])=>`<button class="${k} ${rec[s.id]===k?'on':''}" data-a="attset" data-id="${s.id}" data-v="${k}">${t}</button>`).join('')}</div></div>`).join('')}
+ <div class="g2 mt"><button class="btn pri" data-a="attsave">${ic('check')} حفظ التفقّد</button><button class="btn wa" data-a="attwa">${ic('wa')} إبلاغ أهالي الغائبين</button></div>
+ <small style="color:var(--mut)">ح = حاضر · غ = غائب · ت = متأخر · ع = غياب بعذر</small>`}</main>`};
+
+/* ---- العلامات (المدارس) ---- */
+V.grades=()=>{const exs=DB.exams.slice().sort((a,b)=>b.t-a.t);const e=DB.exams.find(x=>x.id===ui.ec)||exs[0];
+ let h=head('الامتحانات والعلامات')+`<main class="main"><div class="row" style="margin-bottom:10px"><select class="inp" style="flex:1;margin:0" data-c="ec">${exs.map(x=>`<option value="${x.id}" ${e&&x.id===e.id?'selected':''}>${esc(x.name)} · ${esc(clsName(x.cid))} · ${esc(x.term||'')}</option>`).join('')||'<option>ما في امتحانات</option>'}</select><button class="btn pri" data-a="sheet" data-v="examform">${ic('plus')} امتحان</button></div>`;
+ if(!e)return h+empty('chart','أضف امتحان أولاً','مثلاً: مذاكرة أولى، امتحان الفصل الأول')+'</main>';
+ const c=clsById(e.cid),subs=(c&&c.subs)||[],l=inCls(e.cid),m=DB.marks[e.id]||{};
+ if(!subs.length)return h+empty('book','حدد مواد هال'+L.cls+' أولاً',`<button class="btn mt" data-a="open" data-v="cls" data-id="${e.cid}">فتح ${esc(c?c.name:'')}</button>`)+'</main>';
+ h+=`<div class="tw"><table class="t"><tr><th>الطالب</th>${subs.map(s=>`<th>${esc(s.n)}<br><small>/${s.max}</small></th>`).join('')}<th>المجموع</th><th>%</th></tr>
+ ${l.map(s=>{const r=m[s.id]||{};let g=0,mx=0;subs.forEach(sb=>{if(r[sb.n]!=null&&r[sb.n]!==''){g+=+r[sb.n];mx+=+sb.max}});return `<tr><td class="nm">${esc(s.name)}</td>${subs.map(sb=>`<td><input class="mk" inputmode="decimal" data-mk="${s.id}|${esc(sb.n)}" value="${r[sb.n]??''}"></td>`).join('')}<td><b>${fmt(g)}</b></td><td>${mx?Math.round(g/mx*1000)/10:''}</td></tr>`}).join('')}</table></div>
+ <div class="g2"><button class="btn pri" data-a="mksave" data-id="${e.id}">${ic('check')} حفظ العلامات</button><button class="btn" data-a="presults" data-id="${e.id}">${ic('print')} طباعة كشف النتائج</button></div>
+ <div class="g2 mt"><button class="btn" data-a="pallreports" data-id="${e.cid}">${ic('file')} طباعة جلاءات ال${L.cls}</button><button class="btn bad" data-a="examdel" data-id="${e.id}">${ic('trash')} حذف الامتحان</button></div></main>`;return h};
+
+/* ---- الحفظ (المعاهد) ---- */
+V.hifz=()=>{const c=ui.hc||(DB.classes[0]||{}).id||'',l=c?inCls(c):[];
+ return head('الحفظ والتسميع')+`<main class="main"><label class="f">${L.cls}<select class="inp" data-c="hc">${clsOpts(c)}</select></label>
+ ${!l.length?empty('book','ما في '+L.stuP+' بهالحلقة'):l.map(s=>{const last=hifzOf(s.id).find(x=>x.type==='h');return `<div class="li">${avatar(s)}<div class="gr"><b>${esc(s.name)}</b><small>آخر حفظ: ${posTxt(last)} · ${fmt(pagesOf(s.id))} صفحة · ${juzOf(s.id)} جزء</small><div class="bar" style="margin-top:4px"><i style="width:${juzOf(s.id)/30*100}%"></i></div></div><button class="btn sm pri" data-a="hnew" data-id="${s.id}">تسميع</button></div>`}).join('')}
+ <div class="card mt"><h3>${ic('cal')}تسميع اليوم</h3>${DB.hifz.filter(x=>isoD(x.t)===today()).map(x=>{const s=stuById(x.sid);return `<div class="kv"><span>${esc(s?s.name:'')} · ${x.type==='h'?'حفظ':'مراجعة'} ${esc(SURAS[x.s1]||'')} ${x.a1||''} ← ${esc(SURAS[x.s2]||'')} ${x.a2||''}</span><b>${esc(x.grade||'')}</b></div>`}).join('')||'<small style="color:var(--mut)">ما في تسميع اليوم</small>'}</div></main>`};
+
+/* ---- الأقساط ---- */
+V.fees=()=>{const q=norm(ui.fq),c=ui.fc,l=active().filter(s=>(!c||s.cid===c)&&(!q||norm(s.name+' '+(s.father||'')).includes(q))),due=l.reduce((a,s)=>a+dueOf(s),0),fee=l.reduce((a,s)=>a+feeOf(s),0);
+ const rec=DB.pays.slice().sort((a,b)=>b.t-a.t).slice(0,30);
+ return head(L.fees)+`<main class="main"><div class="g4">${kpi('المطلوب',money(fee),'','money')}${kpi('المحصّل',money(fee-due),'ok','check')}${kpi('المتبقي',money(due),'bad','bell')}${kpi('نسبة التحصيل',fee?Math.round((fee-due)/fee*100)+'%':'—','gold','chart')}</div>
+ <div class="row mt"><select class="inp" style="flex:1;margin:0" data-c="fc">${clsOpts(c,'كل '+L.clsP)}</select><button class="btn" data-a="pdues">${ic('print')} كشف المتأخرين</button></div>
+ <div class="srch mt">${ic('search')}<input data-i="fq" value="${esc(ui.fq)}" placeholder="ابحث عن ${L.stu}"></div><div id="fl">${feeList(l)}</div>
+ <div class="card mt"><h3>${ic('file')}آخر الإيصالات</h3>${rec.map(x=>{const s=stuById(x.sid);return `<div class="kv"><span>${x.no} · ${esc(s?s.name:'')} · ${isoD(x.t)}</span><b>${money(x.amt)} <button class="btn sm" data-a="prcpt" data-id="${x.id}">${ic('print')}</button></b></div>`}).join('')||'<small style="color:var(--mut)">ما في إيصالات</small>'}</div></main>`};
+const feeList=l=>l.map(s=>{const d=dueOf(s),f=feeOf(s);return `<div class="li">${avatar(s)}<div class="gr"><b>${esc(s.name)}</b><small>${esc(clsName(s.cid))} · دفع ${money(f-d)} من ${money(f)}</small><div class="bar" style="margin-top:4px"><i style="width:${f?Math.round((f-d)/f*100):100}%"></i></div></div>${d>0?`<button class="btn sm pri" data-a="paynew" data-id="${s.id}">قبض</button>`:'<span class="badge ok">مسدد</span>'}</div>`}).join('')||empty('money','ما في '+L.stuP);
+IN.fq=v=>{ui.fq=v;const q=norm(v),c=ui.fc,e=$('#fl');if(e)e.innerHTML=feeList(active().filter(s=>(!c||s.cid===c)&&(!q||norm(s.name+' '+(s.father||'')).includes(q))))};
+
+/* ---- المزيد ---- */
+V.more=()=>head('المزيد')+`<main class="main"><div class="g3w">${[['classes',L.clsP,'cls'],['teachers',L.tchP,'tch'],...(Q?[]:[['tt','البرنامج الأسبوعي','cal']]),['reports','التقارير','chart'],['exps','المصاريف والرواتب','money'],['cards','بطاقات '+L.stuP,'card'],['settings','الإعدادات','gear'],['log','سجل العمليات','file']].map(([k,t,i])=>`<button class="kpi" style="text-align:center" data-a="open" data-v="${k}">${ic(i)}<b style="font-size:15px">${t}</b></button>`).join('')}</div>
+ <div class="card mt"><h3>${ic('down')}النسخ الاحتياطي</h3><p style="color:var(--mut);margin:0 0 10px">احفظ نسخة من كل البيانات على ملف، وخزّنها على فلاشة أو درايف.</p><div class="g2"><button class="btn pri" data-a="backup">${ic('down')} حفظ نسخة</button><button class="btn" data-a="restore">${ic('up')} استرجاع نسخة</button></div></div>
+ <p style="text-align:center;color:var(--mut);font-size:12px">${APPNAME} ${VERSION} · شركة الخنساء للتصميم والبرمجة · 0934664381</p></main>`;
+
+P.classes=()=>head(L.clsP,'',true)+`<main class="main">${DB.classes.map(c=>{const t=tchById(c.tid);return `<button class="li" data-a="open" data-v="cls" data-id="${c.id}"><span class="av">${ic(Q?'book':'cls')}</span><div class="gr"><b>${esc(c.name)}</b><small>${inCls(c.id).length} ${L.stu}${t?' · '+esc(t.name):''}${S().feesOn&&c.fee?' · '+money(c.fee):''}</small></div></button>`}).join('')||empty('cls','ما في '+L.clsP)}</main><button class="fab" data-a="sheet" data-v="clsform">${ic('plus')} إضافة ${L.cls}</button>`;
+P.cls=p=>{const c=clsById(p.id);if(!c)return head(L.cls,'',true)+'<main class="main"></main>';const l=inCls(c.id),t=tchById(c.tid);
+ return head(c.name,`<button class="ib" data-a="sheet" data-v="clsform" data-id="${c.id}">${ic('edit')}</button>`,true)+`<main class="main"><div class="g4">${kpi(L.stuP,l.length,'blue','users')}${kpi(L.tch,t?t.name:'—','','tch')}${S().feesOn?kpi(Q?'الاشتراك':'القسط السنوي',money(c.fee||0),'gold','money'):''}${Q?kpi('مجموع المحفوظ',fmt(l.reduce((a,s)=>a+pagesOf(s.id),0))+' ص','ok','book'):kpi('المواد',(c.subs||[]).length,'','book')}</div>
+ ${Q?'':`<div class="card mt"><h3>${ic('book')}المواد والعلامة العظمى<span class="sp"></span><button class="btn sm" data-a="sheet" data-v="subform" data-id="${c.id}">${ic('edit')} تعديل</button></h3>${(c.subs||[]).map(s=>`<div class="kv"><span>${esc(s.n)}${s.t?' · '+esc((tchById(s.t)||{}).name||''):''}</span><b>${s.max}</b></div>`).join('')||'<small style="color:var(--mut)">ما في مواد</small>'}</div>`}
+ <div class="row mt"><button class="btn sm" data-a="plist" data-id="${c.id}">${ic('print')} قائمة الأسماء</button><button class="btn sm" data-a="pattsheet" data-id="${c.id}">${ic('print')} ورقة تفقّد شهرية</button>${Q?'':`<button class="btn sm" data-a="opentt" data-id="${c.id}">${ic('cal')} البرنامج</button>`}</div>
+ <h3 style="margin:16px 2px 8px">${L.stuP}</h3>${l.map(stuLi).join('')||empty('users','ما في '+L.stuP)}</main>`};
+P.teachers=()=>head(L.tchP,'',true)+`<main class="main">${DB.teachers.map(t=>{const pd=DB.tpays.filter(x=>x.tid===t.id).reduce((a,x)=>a+x.amt,0);return `<button class="li" data-a="sheet" data-v="tchform" data-id="${t.id}"><span class="av">${esc(t.name[0]||'?')}</span><div class="gr"><b>${esc(t.name)}</b><small>${esc(t.subj||'')}${t.phone?' · '+esc(t.phone):''}${t.salary?' · الراتب '+money(t.salary):''}</small></div><button class="btn sm" data-a="tpay" data-id="${t.id}">${ic('money')} دفع</button></button>`}).join('')||empty('tch','ما في '+L.tchP)}</main><button class="fab" data-a="sheet" data-v="tchform">${ic('plus')} إضافة ${L.tch}</button>`;
+P.tt=p=>{const c=ui.ttc||(DB.classes[0]||{}).id||'';ui.ttc=c;const g=DB.tt[c]||{},days=S().days||DAYS,np=+S().periods||7;
+ return head('البرنامج الأسبوعي','',true)+`<main class="main"><label class="f">${L.cls}<select class="inp" data-c="ttc">${clsOpts(c)}</select></label>${c?`<div class="tw"><table class="t tt"><tr><th>اليوم</th>${Array.from({length:np},(_,i)=>`<th>${i+1}</th>`).join('')}</tr>${days.map((d,di)=>`<tr><th>${d}</th>${Array.from({length:np},(_,pi)=>{const v=g[di+'-'+pi]||'';return `<td class="x" data-a="ttcell" data-id="${c}" data-v="${di}-${pi}">${esc(v)}</td>`}).join('')}</tr>`).join('')}</table></div><button class="btn" data-a="ptt" data-id="${c}">${ic('print')} طباعة البرنامج</button>`:empty('cal','أضف '+L.clsP+' أولاً')}</main>`};
+P.reports=()=>{const st=active();const byC=DB.classes.map(c=>{const l=inCls(c.id);let p=0,n=0;for(const [k,v] of Object.entries(DB.att))if(k.endsWith('|'+c.id))for(const x of Object.values(v)){n++;if(x==='p'||x==='l')p++}return [c,l.length,n?Math.round(p/n*100):null,l.reduce((a,s)=>a+dueOf(s),0)]});
+ const absent=st.map(s=>[s,attStats(s.id).a]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ const income=DB.pays.reduce((a,p)=>a+p.amt,0),out=DB.exps.reduce((a,e)=>a+e.amt,0)+DB.tpays.reduce((a,e)=>a+e.amt,0);
+ return head('التقارير','',true)+`<main class="main"><div class="tw"><table class="t"><tr><th>${L.cls}</th><th>${L.stuP}</th><th>نسبة الحضور</th>${S().feesOn?'<th>المتبقي</th>':''}</tr>${byC.map(([c,n,a,d])=>`<tr><td class="nm">${esc(c.name)}</td><td>${n}</td><td>${a==null?'—':a+'%'}</td>${S().feesOn?`<td>${money(d)}</td>`:''}</tr>`).join('')}</table></div>
+ <div class="card"><h3>${ic('bell')}الأكثر غياباً</h3>${absent.map(([s,a])=>`<div class="kv"><span>${esc(s.name)} · ${esc(clsName(s.cid))}</span><b style="color:var(--bad)">${a} يوم</b></div>`).join('')||'<small style="color:var(--mut)">ما في غياب</small>'}</div>
+ <div class="card"><h3>${ic('money')}الملخص المالي</h3><div class="kv"><span>${L.fees} المقبوضة</span><b style="color:var(--ok)">${money(income)}</b></div><div class="kv"><span>الرواتب والمصاريف</span><b style="color:var(--bad)">${money(out)}</b></div><div class="kv"><span>الصافي</span><b>${money(income-out)}</b></div></div>
+ <div class="card"><h3>${ic('users')}الإحصاء</h3><div class="kv"><span>ذكور</span><b>${st.filter(s=>s.gender==='m').length}</b></div><div class="kv"><span>إناث</span><b>${st.filter(s=>s.gender==='f').length}</b></div><div class="kv"><span>منقطعين</span><b>${DB.students.filter(s=>s.status==='left').length}</b></div><div class="kv"><span>أوراق ناقصة</span><b>${st.filter(s=>(S().docs||[]).some(d=>!(s.docs&&s.docs[d]))).length} ${L.stu}</b></div></div></main>`};
+P.exps=()=>{const l=[...DB.exps.map(e=>({...e,k:'e'})),...DB.tpays.map(e=>({...e,k:'t',cat:'راتب: '+((tchById(e.tid)||{}).name||'')}))].sort((a,b)=>b.t-a.t);
+ return head('المصاريف والرواتب','',true)+`<main class="main">${l.map(e=>`<button class="li" data-a="expdel" data-id="${e.id}" data-k="${e.k}"><div class="gr"><b>${esc(e.cat)}${e.note?' · '+esc(e.note):''}</b><small>${dt(e.t)}</small></div><b style="color:var(--bad)">${money(e.amt)}</b></button>`).join('')||empty('money','ما في مصاريف')}</main><button class="fab" data-a="sheet" data-v="expform">${ic('plus')} مصروف</button>`};
+P.cards=()=>head('بطاقات '+L.stuP,'',true)+`<main class="main"><label class="f">${L.cls}<select class="inp" data-c="cc">${clsOpts(ui.cc,'كل '+L.stuP)}</select></label><button class="btn pri wide" data-a="pcards">${ic('print')} طباعة البطاقات (8 بكل صفحة)</button></main>`;
+P.log=()=>head('سجل العمليات','',true)+`<main class="main">${DB.log.slice(0,300).map(x=>`<div class="li"><div class="gr"><b style="white-space:normal">${esc(x.x)}</b><small>${dt(x.t)}</small></div></div>`).join('')||empty('file','السجل فاضي')}</main>`;
+A.opentt=d=>{ui.ttc=d.id;go('tt')};
+/* نهاية e3.js */
+/* ============ النماذج والإجراءات ============ */
+P.setup=()=>`<header class="hd"><h1>أهلاً بك في ${APPNAME}</h1></header><main class="main"><div class="card"><h3>${ic('star')}معلومات ${Q?'المعهد':'المدرسة'}</h3>
+ <label class="f">اسم ${Q?'المعهد / المسجد':'المدرسة'}<input id="w_name" data-focus></label><label class="f">${Q?'اسم المشرف':'اسم المدير'}<input id="w_mgr"></label><label class="f">رقم الهاتف<input id="w_phone" inputmode="tel"></label><label class="f">العنوان<input id="w_addr"></label>
+ <label class="f">العام الدراسي<input id="w_year" value="${esc(S().year)}"></label><button class="btn pri wide" data-a="setupok">${ic('check')} ابدأ</button></div>
+ <p style="text-align:center;color:var(--mut);font-size:13px">${Q?'هذا النظام مقدّم مجاناً من':'من تطوير'} شركة الخنساء للتصميم والبرمجة · 0934664381</p></main>`;
+A.setupok=()=>{const n=val('w_name');if(!n)return toast('اكتب الاسم');Object.assign(S(),{name:n,manager:val('w_mgr'),phone:val('w_phone'),addr:val('w_addr'),year:val('w_year')||S().year});DB.ready=true;flush();stack.length=0;render()};
+P.settings=()=>{const s=S();return head('الإعدادات','',true)+`<main class="main"><div class="card"><h3>${ic('star')}المعلومات</h3>
+ <div class="prof"><div class="ph" data-a="logo">${s.logo?`<img src="${s.logo}">`:ic('plus')}</div><small style="color:var(--mut)">اكبس لتغيير الشعار<br>بيطلع بالطباعة والبطاقات</small></div>
+ <label class="f mt">الاسم<input id="s_name" value="${esc(s.name)}"></label><label class="f">${Q?'المشرف':'المدير'}<input id="s_mgr" value="${esc(s.manager)}"></label><label class="f">الهاتف<input id="s_phone" value="${esc(s.phone)}"></label><label class="f">العنوان<input id="s_addr" value="${esc(s.addr)}"></label>
+ <div class="g2"><label class="f">العام الدراسي<input id="s_year" value="${esc(s.year)}"></label><label class="f">العملة<input id="s_cur" value="${esc(s.cur)}"></label></div>
+ <div class="g2"><label class="f">عدد الحصص باليوم<input id="s_per" inputmode="numeric" value="${s.periods}"></label><label class="f">علامة النجاح %<input id="s_pass" inputmode="numeric" value="${s.pass}"></label></div>
+ <label class="f">أيام الدوام (افصل بفاصلة)<input id="s_days" value="${esc((s.days||[]).join('، '))}"></label><label class="f">الفصول (افصل بفاصلة)<input id="s_terms" value="${esc((s.terms||[]).join('، '))}"></label>
+ <label class="f">الأوراق المطلوبة عند التسجيل (افصل بفاصلة)<textarea id="s_docs">${esc((s.docs||[]).join('، '))}</textarea></label>
+ <label class="f">${L.fees}</label>${seg('feeon',s.feesOn?1:0,[[1,'مفعّلة'],[0,'مخفية']])}
+ <button class="btn pri wide mt" data-a="setsave">${ic('check')} حفظ</button></div>
+ <div class="card"><h3>${ic('trash')}منطقة الخطر</h3><button class="btn bad wide" data-a="wipe">${ic('trash')} مسح كل البيانات</button></div></main>`};
+const splitL=v=>v.split(/[،,]/).map(x=>x.trim()).filter(Boolean);
+A.setsave=()=>{Object.assign(S(),{name:val('s_name'),manager:val('s_mgr'),phone:val('s_phone'),addr:val('s_addr'),year:val('s_year'),cur:val('s_cur')||'ل.س',periods:Math.max(1,Math.min(12,num(val('s_per'))||7)),pass:num(val('s_pass'))||50,days:splitL(val('s_days')),terms:splitL(val('s_terms')),docs:splitL(val('s_docs'))});flush();toast('تم الحفظ');render()};
+A.feeon=(d,el)=>{S().feesOn=d.v==='1';flush();render()};
+function pickImg(max,cb){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.8))};im.src=r.result};r.readAsDataURL(f)};i.click()}
+A.logo=()=>pickImg(300,u=>{S().logo=u;flush();render()});
+A.wipe=()=>{if(prompt('للتأكيد اكتب: مسح')!=='مسح')return;localStorage.removeItem(KEY);location.reload()};
+
+/* ---- الطالب ---- */
+A.newstu=()=>{if(!DB.classes.length){toast('أضف '+L.cls+' أولاً');go('clsform',{},true);return}ui.ph='';go('stuform',{},true)};
+SH.stuform=p=>{const s=p.id?stuById(p.id):{name:'',cid:ui.cf&&ui.cf!=='~left'?ui.cf:'',gender:'m',join:today()};if(ui.ph==null||ui.ph==='')ui.ph=s.photo||'';
+ return `<h3>${p.id?'تعديل بيانات':'تسجيل '+L.stu+' جديد'}</h3><div class="prof"><div class="ph" data-a="stuph">${ui.ph?`<img src="${ui.ph}">`:ic('plus')}</div><small style="color:var(--mut)">اكبس لإضافة صورة<br>(كاميرا أو ملف)</small></div>
+ <label class="f mt">الاسم الثلاثي *<input id="f_name" value="${esc(s.name)}" data-focus></label><div class="g2"><label class="f">اسم الأب<input id="f_father" value="${esc(s.father||'')}"></label><label class="f">اسم الأم<input id="f_mother" value="${esc(s.mother||'')}"></label></div>
+ <div class="g2"><label class="f">${L.cls} *<select id="f_cid">${clsOpts(s.cid)}</select></label><label class="f">الجنس<select id="f_gender"><option value="m" ${s.gender!=='f'?'selected':''}>ذكر</option><option value="f" ${s.gender==='f'?'selected':''}>أنثى</option></select></label></div>
+ <div class="g2"><label class="f">تاريخ الميلاد<input id="f_birth" type="date" value="${esc(s.birth||'')}"></label><label class="f">مكان الولادة<input id="f_bplace" value="${esc(s.bplace||'')}"></label></div>
+ <div class="g2"><label class="f">هاتف ولي الأمر (واتساب)<input id="f_phone" inputmode="tel" value="${esc(s.phone||'')}"></label><label class="f">هاتف آخر<input id="f_phone2" inputmode="tel" value="${esc(s.phone2||'')}"></label></div>
+ <label class="f">العنوان<input id="f_addr" value="${esc(s.addr||'')}"></label><div class="g2"><label class="f">الرقم الوطني<input id="f_nid" value="${esc(s.nid||'')}"></label><label class="f">تاريخ التسجيل<input id="f_join" type="date" value="${esc(s.join||today())}"></label></div>
+ ${Q?'':`<label class="f">المدرسة السابقة<input id="f_prev" value="${esc(s.prev||'')}"></label>`}<label class="f">ملاحظات صحية (حساسية، أمراض…)<input id="f_health" value="${esc(s.health||'')}"></label>
+ ${S().feesOn?`<div class="g2"><label class="f">${Q?'الاشتراك':'القسط'} الخاص (فاضي = قسط ال${L.cls})<input id="f_fee" inputmode="decimal" value="${s.fee??''}"></label><label class="f">حسم (إخوة، أيتام…)<input id="f_disc" inputmode="decimal" value="${s.disc||''}"></label></div>`:''}
+ <label class="f">ملاحظات<textarea id="f_notes">${esc(s.notes||'')}</textarea></label><button class="btn pri wide" data-a="stusave" data-id="${p.id||''}">${ic('check')} حفظ</button>`};
+A.stuph=()=>pickImg(360,u=>{ui.ph=u;const e=$('.sheet .ph');if(e)e.innerHTML=`<img src="${u}">`});
+A.stusave=d=>{const n=val('f_name');if(!n)return toast('اكتب الاسم');const cid=val('f_cid');if(!cid)return toast('اختار ال'+L.cls);
+ const o={name:n,father:val('f_father'),mother:val('f_mother'),cid,gender:val('f_gender'),birth:val('f_birth'),bplace:val('f_bplace'),phone:val('f_phone'),phone2:val('f_phone2'),addr:val('f_addr'),nid:val('f_nid'),join:val('f_join'),prev:val('f_prev'),health:val('f_health'),notes:val('f_notes'),photo:ui.ph||''};
+ if(S().feesOn){const f=val('f_fee');o.fee=f===''?'':num(f);o.disc=num(val('f_disc'))}
+ if(d.id){Object.assign(stuById(d.id),o);logA('تعديل بيانات: '+n)}else{DB.students.push(Object.assign({id:uid(),no:++DB.seq,status:'active',docs:{}},o));logA('تسجيل '+L.stu+': '+n)}
+ ui.ph='';flush();back();toast('تم الحفظ')};
+A.doc=(d,el)=>{const s=stuById(d.id);if(!s)return;s.docs=s.docs||{};s.docs[d.v]=el.checked;flush()};
+A.stuleft=d=>{const s=stuById(d.id);if(!s)return;s.status=s.status==='left'?'active':'left';logA((s.status==='left'?'انقطاع: ':'إعادة: ')+s.name);flush();render()};
+A.studel=d=>{const s=stuById(d.id);if(!s||!confirm('حذف '+s.name+' نهائياً مع كل سجلاته؟'))return;DB.students=DB.students.filter(x=>x.id!==s.id);DB.pays=DB.pays.filter(x=>x.sid!==s.id);DB.hifz=DB.hifz.filter(x=>x.sid!==s.id);logA('حذف: '+s.name);flush();back()};
+A.wa=d=>{const s=stuById(d.id);if(s)openWA(s.phone,`السلام عليكم، معكم ${S().name} بخصوص ${L.stu=='طالب'?'الطالب':''} ${s.name}: `)};
+function waNum(p){let n=toLatin(p).replace(/\D/g,'');if(n.startsWith('00'))n=n.slice(2);else if(n.startsWith('0'))n='963'+n.slice(1);return n}
+function openWA(p,t){window.open(`https://wa.me/${waNum(p||'')}?text=${encodeURIComponent(t)}`,'_blank')}
+
+/* ---- الصفوف والمعلمين ---- */
+SH.clsform=p=>{const c=p.id?clsById(p.id):{name:'',fee:''};return `<h3>${p.id?'تعديل':'إضافة'} ${L.cls}</h3><label class="f">الاسم<input id="c_name" value="${esc(c.name)}" placeholder="${Q?'حلقة أبي بكر الصديق':'الصف الأول - شعبة أ'}" data-focus></label>
+ <label class="f">${L.tch} المسؤول<select id="c_tid"><option value="">—</option>${DB.teachers.map(t=>`<option value="${t.id}" ${t.id===c.tid?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label>
+ ${S().feesOn?`<label class="f">${Q?'الاشتراك':'القسط السنوي'}<input id="c_fee" inputmode="decimal" value="${c.fee||''}"></label>`:''}<button class="btn pri wide" data-a="clssave" data-id="${p.id||''}">${ic('check')} حفظ</button>${p.id?`<button class="btn bad wide mt" data-a="clsdel" data-id="${p.id}">${ic('trash')} حذف</button>`:''}`};
+A.clssave=d=>{const n=val('c_name');if(!n)return toast('اكتب الاسم');const o={name:n,tid:val('c_tid'),fee:num(val('c_fee'))};if(d.id)Object.assign(clsById(d.id),o);else DB.classes.push(Object.assign({id:uid(),subs:Q?[]:SUBJ.slice(0,6).map(x=>({n:x,max:100}))},o));flush();back()};
+A.clsdel=d=>{if(inCls(d.id).length)return toast('انقل ال'+L.stuP+' أولاً');DB.classes=DB.classes.filter(c=>c.id!==d.id);flush();stack.length=0;render()};
+SH.subform=p=>{const c=clsById(p.id);return `<h3>مواد ${esc(c.name)}</h3><p style="color:var(--mut);margin:0 0 8px">كل سطر: اسم المادة - العلامة العظمى</p><textarea id="sb" class="inp" style="min-height:220px">${(c.subs||[]).map(s=>s.n+' - '+s.max).join('\n')}</textarea><button class="btn pri wide mt" data-a="subsave" data-id="${c.id}">${ic('check')} حفظ</button>`};
+A.subsave=d=>{const c=clsById(d.id);c.subs=val('sb').split('\n').map(l=>{const m=l.split(/\s+-\s+|\s*:\s*/);return {n:(m[0]||'').trim(),max:num(m[1])||100}}).filter(x=>x.n);flush();back()};
+SH.tchform=p=>{const t=p.id?tchById(p.id):{name:''};return `<h3>${p.id?'تعديل':'إضافة'} ${L.tch}</h3><label class="f">الاسم<input id="t_name" value="${esc(t.name)}" data-focus></label><label class="f">الهاتف<input id="t_phone" value="${esc(t.phone||'')}"></label><label class="f">${Q?'التخصص':'المواد'}<input id="t_subj" value="${esc(t.subj||'')}"></label><label class="f">الراتب الشهري<input id="t_sal" inputmode="decimal" value="${t.salary||''}"></label><button class="btn pri wide" data-a="tchsave" data-id="${p.id||''}">${ic('check')} حفظ</button>${p.id?`<button class="btn bad wide mt" data-a="tchdel" data-id="${p.id}">${ic('trash')} حذف</button>`:''}`};
+A.tchsave=d=>{const n=val('t_name');if(!n)return toast('اكتب الاسم');const o={name:n,phone:val('t_phone'),subj:val('t_subj'),salary:num(val('t_sal'))};if(d.id)Object.assign(tchById(d.id),o);else DB.teachers.push(Object.assign({id:uid()},o));flush();back()};
+A.tchdel=d=>{DB.teachers=DB.teachers.filter(t=>t.id!==d.id);flush();back()};
+A.tpay=(d,el,e)=>{e.stopPropagation();const t=tchById(d.id),v=prompt('المبلغ المدفوع لـ '+t.name,t.salary||'');if(v==null)return;const a=num(v);if(!a)return;DB.tpays.push({id:uid(),tid:t.id,amt:a,t:Date.now(),note:''});logA('دفع راتب '+t.name+': '+money(a));flush();toast('تم التسجيل');render()};
+SH.expform=()=>`<h3>مصروف جديد</h3><label class="f">البند<input id="x_cat" placeholder="كهرباء، قرطاسية، صيانة…" data-focus></label><label class="f">المبلغ<input id="x_amt" inputmode="decimal"></label><label class="f">ملاحظة<input id="x_note"></label><button class="btn pri wide" data-a="expsave">${ic('check')} حفظ</button>`;
+A.expsave=()=>{const a=num(val('x_amt'));if(!a)return toast('اكتب المبلغ');DB.exps.push({id:uid(),cat:val('x_cat')||'مصروف',amt:a,note:val('x_note'),t:Date.now()});flush();back()};
+A.expdel=d=>{if(!confirm('حذف؟'))return;if(d.k==='t')DB.tpays=DB.tpays.filter(x=>x.id!==d.id);else DB.exps=DB.exps.filter(x=>x.id!==d.id);flush();render()};
+A.ttcell=d=>{const g=DB.tt[d.id]=DB.tt[d.id]||{},v=prompt('المادة / المعلم لهالحصة',g[d.v]||'');if(v==null)return;g[d.v]=v.trim();flush();render()};
+
+/* ---- الحضور ---- */
+const curAtt=()=>{const c=ui.ac||(DB.classes[0]||{}).id||'',d=ui.ad||today();ui.ac=c;return DB.att[attKey(d,c)]=DB.att[attKey(d,c)]||{}};
+A.attset=d=>{const r=curAtt();r[d.id]=d.v;save();render()};
+A.attall=()=>{const r=curAtt();inCls(ui.ac).forEach(s=>{if(!r[s.id])r[s.id]='p'});save();render()};
+A.attsave=()=>{const r=curAtt(),l=inCls(ui.ac),miss=l.filter(s=>!r[s.id]).length;if(miss)return toast(`باقي ${miss} بدون تحديد`);logA('تفقّد '+clsName(ui.ac)+' '+(ui.ad||today()));flush();toast('تم حفظ التفقّد ✓')};
+A.attwa=()=>{const r=curAtt(),ab=inCls(ui.ac).filter(s=>r[s.id]==='a'&&s.phone);if(!ab.length)return toast('ما في غائبين عندهم رقم');ui.waq=ab.map(s=>s.id);go('waq',{},true)};
+SH.waq=()=>`<h3>إبلاغ أهالي الغائبين</h3><p style="color:var(--mut);margin:0 0 8px">اكبس على كل اسم ليفتح واتساب برسالة جاهزة</p>${(ui.waq||[]).map(id=>{const s=stuById(id);return `<button class="li" data-a="wa1" data-id="${id}">${avatar(s)}<div class="gr"><b>${esc(s.name)}</b><small>${esc(s.phone)}</small></div>${ic('wa')}</button>`}).join('')}`;
+A.wa1=(d,el)=>{const s=stuById(d.id);openWA(s.phone,`السلام عليكم ورحمة الله\nنعلمكم أن ${s.gender==='f'?'ابنتكم':'ابنكم'} *${s.name}* ${s.gender==='f'?'غائبة':'غائب'} اليوم ${ui.ad||today()} عن ${S().name}.\nنرجو التواصل معنا لمعرفة السبب.`);el.style.opacity=.45};
+
+/* ---- الامتحانات ---- */
+SH.examform=()=>`<h3>امتحان جديد</h3><label class="f">الاسم<input id="e_name" placeholder="مذاكرة أولى، امتحان نهائي…" data-focus></label><label class="f">${L.cls}<select id="e_cid">${clsOpts(ui.ac)}</select></label><label class="f">الفصل<select id="e_term">${(S().terms||[]).map(t=>`<option>${esc(t)}</option>`).join('')}</select></label><button class="btn pri wide" data-a="examsave">${ic('check')} حفظ</button>`;
+A.examsave=()=>{const n=val('e_name'),c=val('e_cid');if(!n||!c)return toast('اكتب الاسم واختار ال'+L.cls);const e={id:uid(),name:n,cid:c,term:val('e_term'),t:Date.now()};DB.exams.push(e);ui.ec=e.id;flush();back()};
+A.mksave=d=>{const m=DB.marks[d.id]=DB.marks[d.id]||{};document.querySelectorAll('[data-mk]').forEach(i=>{const [sid,sub]=i.dataset.mk.split('|');m[sid]=m[sid]||{};m[sid][sub]=i.value.trim()===''?'':num(i.value)});logA('حفظ علامات: '+(DB.exams.find(x=>x.id===d.id)||{}).name);flush();toast('تم حفظ العلامات ✓');render()};
+A.examdel=d=>{if(!confirm('حذف الامتحان مع علاماته؟'))return;DB.exams=DB.exams.filter(x=>x.id!==d.id);delete DB.marks[d.id];ui.ec='';flush();render()};
+
+/* ---- الأقساط ---- */
+A.paynew=d=>go('payform',{id:d.id},true);
+SH.payform=p=>{const s=stuById(p.id);return `<h3>قبض من ${esc(s.name)}</h3><div class="kv"><span>المتبقي عليه</span><b style="color:var(--bad)">${money(dueOf(s))}</b></div><label class="f mt">المبلغ<input id="py_amt" inputmode="decimal" value="${dueOf(s)||''}" data-focus></label><label class="f">ملاحظة (القسط الأول، كتب…)<input id="py_note"></label><button class="btn pri wide" data-a="paysave" data-id="${s.id}">${ic('check')} قبض وطباعة الإيصال</button>`};
+A.paysave=d=>{const a=num(val('py_amt'));if(!(a>0))return toast('اكتب المبلغ');const p={id:uid(),sid:d.id,amt:a,note:val('py_note'),t:Date.now(),no:++DB.rseq};DB.pays.push(p);logA('قبض إيصال '+p.no+': '+money(a));flush();back();toast('تم القبض ✓');prRcpt(p)};
+A.prcpt=d=>{const p=DB.pays.find(x=>x.id===d.id);if(p)prRcpt(p)};
+
+/* ---- الحفظ ---- */
+A.hnew=d=>{const last=hifzOf(d.id).find(x=>x.type==='h');ui.hs=last?last.s2:0;ui.hf=last?last.a2+1:1;go('hform',{id:d.id},true)};
+const suraOpts=sel=>SURAS.map((n,i)=>`<option value="${i}" ${i==sel?'selected':''}>${i+1}. ${n}</option>`).join('');
+SH.hform=p=>{const s=stuById(p.id);return `<h3>تسميع: ${esc(s.name)}</h3>${seg('set',ui.ht||'h',[['h','حفظ جديد'],['m','مراجعة']],'ht')}
+ <div class="g2 mt"><label class="f">من سورة<select id="h_s1">${suraOpts(ui.hs||0)}</select></label><label class="f">من آية<input id="h_a1" inputmode="numeric" value="${ui.hf||1}"></label></div>
+ <div class="g2"><label class="f">إلى سورة<select id="h_s2">${suraOpts(ui.hs||0)}</select></label><label class="f">إلى آية<input id="h_a2" inputmode="numeric" data-focus></label></div>
+ <label class="f">عدد الصفحات<input id="h_pg" inputmode="decimal" placeholder="مثلاً 1 أو 0.5"></label><label class="f">التقدير</label>${seg('set',ui.hg||GRADES[0],GRADES.map(g=>[g,g]),'hg')}
+ <label class="f mt">ملاحظة<input id="h_note"></label><button class="btn pri wide" data-a="hsave" data-id="${s.id}">${ic('check')} حفظ</button>`};
+A.hsave=d=>{const s1=+val('h_s1'),s2=+val('h_s2'),a1=num(val('h_a1')),a2=num(val('h_a2'));if(!a2)return toast('اكتب إلى آية');if(a2>AYAT[s2])return toast(`سورة ${SURAS[s2]} آياتها ${AYAT[s2]}`);
+ DB.hifz.push({id:uid(),sid:d.id,t:Date.now(),type:ui.ht||'h',s1,a1,s2,a2,pages:num(val('h_pg')),grade:ui.hg||GRADES[0],note:val('h_note')});flush();back();toast('تم ✓')};
+SH.testform=p=>`<h3>سبر جزء</h3><label class="f">رقم الجزء<input id="ts_j" inputmode="numeric" data-focus></label><label class="f">العلامة من 100<input id="ts_m" inputmode="decimal"></label><button class="btn pri wide" data-a="testsave" data-id="${p.id}">${ic('check')} حفظ</button>`;
+A.testsave=d=>{const j=num(val('ts_j')),m=num(val('ts_m'));if(!j||j>30)return toast('رقم الجزء من 1 لـ 30');DB.tests.push({id:uid(),sid:d.id,juz:j,mark:m,grade:m>=90?'ممتاز':m>=80?'جيد جداً':m>=70?'جيد':m>=60?'مقبول':'يعاد',t:Date.now()});flush();back()};
+
+/* ---- استيراد ونسخ احتياطي ---- */
+SH.import=()=>`<h3>استيراد ${L.stuP} من إكسل</h3><p style="color:var(--mut);margin:0 0 8px">انسخ الأعمدة من إكسل والصقها هون بهالترتيب:<br><b>الاسم - اسم الأب - هاتف الولي - ${L.cls}</b></p><textarea id="imp" class="inp" style="min-height:200px" placeholder="أحمد محمد	محمد	0944...	الصف الأول"></textarea><button class="btn pri wide mt" data-a="impok">${ic('down')} استيراد</button>`;
+A.impok=()=>{let n=0;val('imp').split('\n').forEach(l=>{const c=l.split(/\t|;|,/).map(x=>x.trim());if(!c[0])return;let cl=DB.classes.find(x=>norm(x.name)===norm(c[3]||''));if(!cl&&c[3]){cl={id:uid(),name:c[3],fee:0,subs:Q?[]:SUBJ.slice(0,6).map(x=>({n:x,max:100}))};DB.classes.push(cl)}
+ DB.students.push({id:uid(),no:++DB.seq,name:c[0],father:c[1]||'',phone:c[2]||'',cid:cl?cl.id:(DB.classes[0]||{}).id||'',gender:'m',join:today(),status:'active',docs:{}});n++});flush();back();toast(`تم استيراد ${n} ${L.stu}`)};
+A.backup=()=>{const b=new Blob([JSON.stringify(DB)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`نسخة-${S().name||'الخنساء'}-${today()}.json`;a.click();toast('تم حفظ النسخة')};
+A.restore=()=>{const i=document.createElement('input');i.type='file';i.accept='.json,application/json';i.onchange=()=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.set||!d.students)throw 0;if(!confirm('رح تنمسح البيانات الحالية وتنحط النسخة. متأكد؟'))return;DB=Object.assign(fresh(),d);flush();location.reload()}catch(e){toast('الملف مو نسخة صحيحة')}};r.readAsText(i.files[0])};i.click()};
+/* نهاية e4.js */
+/* ============ الطباعة A4 ============ */
+const NATIVE=()=>!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const phd=t=>`<div class="ph1">${S().logo?`<img src="${S().logo}">`:''}<div class="sp"><h2>${esc(S().name)}</h2><div>${esc(S().addr||'')}${S().phone?' · '+esc(S().phone):''}</div></div><div style="text-align:left"><b>${t}</b><div>${esc(S().year)}</div></div></div>`;
+function doPrint(html){$('#print').innerHTML=html;if(NATIVE()){ui.pv=html;go('pview',{},true);return}setTimeout(()=>window.print(),80)}
+SH.pview=()=>`<h3>معاينة</h3><p style="color:var(--mut);margin:0 0 8px">الطباعة على ورق A4 من نسخة الكمبيوتر. هون فيك تاخد صورة للشاشة وتبعتها.</p><div style="background:#fff;color:#000;border:1px solid var(--line);padding:10px;zoom:.55">${ui.pv||''}</div>`;
+function prRcpt(p){const s=stuById(p.sid)||{};doPrint(`<div class="pg">${phd('إيصال قبض رقم '+p.no)}<div class="pkv"><div>التاريخ: ${dt(p.t)}</div><div>رقم الإيصال: ${p.no}</div><div>استلمنا من: ولي أمر ${L.stu} <b>${esc(s.name)}</b></div><div>${L.cls}: ${esc(clsName(s.cid))}</div><div>المبلغ: <b>${money(p.amt)}</b></div><div>البيان: ${esc(p.note||L.fees)}</div><div>المدفوع حتى تاريخه: ${money(paidOf(s.id))}</div><div>المتبقي: ${money(dueOf(s))}</div></div><div class="sig"><div>توقيع المستلم</div><div>الختم</div></div></div>`)}
+const stuInfoRows=s=>[['الاسم',s.name],['رقم التسجيل',s.no],['اسم الأب',s.father],['اسم الأم',s.mother],['تاريخ الميلاد',s.birth],['مكان الولادة',s.bplace],['الجنس',s.gender==='f'?'أنثى':'ذكر'],['الرقم الوطني',s.nid],[L.cls,clsName(s.cid)],['تاريخ التسجيل',s.join],['هاتف الولي',s.phone],['هاتف آخر',s.phone2],['العنوان',s.addr],['المدرسة السابقة',s.prev],['ملاحظات صحية',s.health]];
+A.pform=d=>{const s=stuById(d.id);doPrint(`<div class="pg">${phd('استمارة تسجيل '+L.stu)}<div style="display:flex;gap:14px"><div class="pkv" style="flex:1">${stuInfoRows(s).map(([k,v])=>`<div>${k}: <b>${esc(v||'')}</b></div>`).join('')}</div>${s.photo?`<img src="${s.photo}" style="width:35mm;height:45mm;object-fit:cover;border:1px solid #000">`:'<div style="width:35mm;height:45mm;border:1px solid #000;display:flex;align-items:center;justify-content:center">صورة</div>'}</div>
+ <h3>الأوراق المسلّمة</h3><table class="pt"><tr>${(S().docs||[]).map(x=>`<th>${esc(x)}</th>`).join('')}</tr><tr>${(S().docs||[]).map(x=>`<td>${s.docs&&s.docs[x]?'✔':''}</td>`).join('')}</tr></table>
+ <p>أتعهد أنا ولي أمر ${L.stu} المذكور أعلاه بالالتزام بأنظمة ${esc(S().name)} وتعليماتها.</p><div class="sig"><div>توقيع ولي الأمر</div><div>${Q?'المشرف':'المدير'}: ${esc(S().manager||'')}</div><div>الختم</div></div></div>`)};
+const idCard=s=>`<div class="idc"><div class="top">${S().logo?`<img src="${S().logo}" style="width:7mm;height:7mm;background:#fff;border-radius:1mm">`:''}${esc(S().name)}</div>${s.photo?`<img class="p" src="${s.photo}">`:'<div style="width:22mm;height:26mm;border:1px solid #000;float:left"></div>'}<div style="font-size:11px;line-height:1.7"><b style="font-size:13px">${esc(s.name)}</b><br>${L.cls}: ${esc(clsName(s.cid))}<br>رقم: ${s.no}<br>الولي: ${esc(s.phone||'')}<br>العام: ${esc(S().year)}</div></div>`;
+A.pcard=d=>doPrint(`<div class="pg">${idCard(stuById(d.id))}</div>`);
+A.pcards=()=>{const l=(ui.cc?inCls(ui.cc):active());if(!l.length)return toast('ما في '+L.stuP);let h='';for(let i=0;i<l.length;i+=8)h+=`<div class="pg">${l.slice(i,i+8).map(idCard).join('')}</div>`;doPrint(h)};
+function reportPage(s){const ex=DB.exams.filter(e=>e.cid===s.cid),c=clsById(s.cid),subs=(c&&c.subs)||[],terms=S().terms||[];
+ const cell=(e,sb)=>{const v=((DB.marks[e.id]||{})[s.id]||{})[sb.n];return v===''||v==null?'':v};
+ let tot=0,max=0;const rows=subs.map(sb=>{let g=0,m=0;ex.forEach(e=>{const v=cell(e,sb);if(v!==''){g+=+v;m+=+sb.max}});tot+=g;max+=m;const pct=m?g/m*100:null;return `<tr><td style="text-align:right">${esc(sb.n)}</td>${ex.map(e=>`<td>${cell(e,sb)}</td>`).join('')}<td><b>${fmt(g)}</b></td><td>${m?fmt(m):''}</td><td>${pct==null?'':(pct>=S().pass?'ناجح':'<b>راسب</b>')}</td></tr>`}).join('');
+ const avg=max?Math.round(tot/max*1000)/10:0;const rk=rankIn(s);
+ return `<div class="pg">${phd('الجلاء المدرسي')}<div class="pkv"><div>${L.stu}: <b>${esc(s.name)}</b></div><div>${L.cls}: ${esc(clsName(s.cid))}</div><div>اسم الأب: ${esc(s.father||'')}</div><div>رقم التسجيل: ${s.no}</div></div>
+ <table class="pt"><tr><th>المادة</th>${ex.map(e=>`<th>${esc(e.name)}<br><small>${esc(e.term||'')}</small></th>`).join('')}<th>المجموع</th><th>العظمى</th><th>النتيجة</th></tr>${rows}<tr><th>المجموع العام</th>${ex.map(()=>'<th></th>').join('')}<th>${fmt(tot)}</th><th>${fmt(max)}</th><th>${avg}%</th></tr></table>
+ <div class="pkv"><div>المعدل: <b>${avg}%</b></div><div>الترتيب: <b>${rk?rk[0]+' من '+rk[1]:'—'}</b></div><div>أيام الغياب: ${attStats(s.id).a}</div><div>النتيجة العامة: <b>${avg>=S().pass?'ناجح':'راسب'}</b></div></div>
+ <p>ملاحظات المرشد: ........................................................................................................</p><div class="sig"><div>مربي ال${L.cls}</div><div>ولي الأمر</div><div>${Q?'المشرف':'مدير المدرسة'}: ${esc(S().manager||'')}</div></div></div>`}
+function avgOf(s){const ex=DB.exams.filter(e=>e.cid===s.cid),c=clsById(s.cid),subs=(c&&c.subs)||[];let g=0,m=0;ex.forEach(e=>subs.forEach(sb=>{const v=((DB.marks[e.id]||{})[s.id]||{})[sb.n];if(v!==''&&v!=null){g+=+v;m+=+sb.max}}));return m?g/m:null}
+function rankIn(s){const l=inCls(s.cid).map(x=>[x.id,avgOf(x)]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);const i=l.findIndex(x=>x[0]===s.id);return i<0?null:[i+1,l.length]}
+A.preport=d=>doPrint(reportPage(stuById(d.id)));
+A.pallreports=d=>{const l=inCls(d.id);if(!l.length)return toast('ما في '+L.stuP);doPrint(l.map(reportPage).join(''))};
+A.presults=d=>{const e=DB.exams.find(x=>x.id===d.id),c=clsById(e.cid),subs=c.subs||[],m=DB.marks[e.id]||{};const rows=inCls(e.cid).map(s=>{const r=m[s.id]||{};let g=0,mx=0;subs.forEach(sb=>{if(r[sb.n]!==''&&r[sb.n]!=null){g+=+r[sb.n];mx+=+sb.max}});return [s,r,g,mx]}).sort((a,b)=>(b[3]?b[2]/b[3]:0)-(a[3]?a[2]/a[3]:0));
+ doPrint(`<div class="pg">${phd('كشف نتائج: '+esc(e.name))}<div>${L.cls}: <b>${esc(c.name)}</b> · ${esc(e.term||'')}</div><table class="pt"><tr><th>#</th><th>الاسم</th>${subs.map(s=>`<th>${esc(s.n)}</th>`).join('')}<th>المجموع</th><th>%</th></tr>${rows.map(([s,r,g,mx],i)=>`<tr><td>${i+1}</td><td style="text-align:right">${esc(s.name)}</td>${subs.map(sb=>`<td>${r[sb.n]??''}</td>`).join('')}<td><b>${fmt(g)}</b></td><td>${mx?Math.round(g/mx*1000)/10:''}</td></tr>`).join('')}</table><div class="sig"><div>مربي ال${L.cls}</div><div>الإدارة</div></div></div>`)};
+A.plist=d=>{const c=clsById(d.id);doPrint(`<div class="pg">${phd('قائمة أسماء')}<div>${L.cls}: <b>${esc(c.name)}</b></div><table class="pt"><tr><th>#</th><th>الاسم</th><th>اسم الأب</th><th>تاريخ الميلاد</th><th>هاتف الولي</th></tr>${inCls(c.id).map((s,i)=>`<tr><td>${i+1}</td><td style="text-align:right">${esc(s.name)}</td><td>${esc(s.father||'')}</td><td>${esc(s.birth||'')}</td><td>${esc(s.phone||'')}</td></tr>`).join('')}</table></div>`)};
+A.pattsheet=d=>{const c=clsById(d.id);doPrint(`<div class="pg">${phd('ورقة تفقّد شهرية')}<div>${L.cls}: <b>${esc(c.name)}</b> · الشهر: ............</div><table class="pt"><tr><th>#</th><th>الاسم</th>${Array.from({length:26},(_,i)=>`<th style="padding:2px">${i+1}</th>`).join('')}</tr>${inCls(c.id).map((s,i)=>`<tr><td>${i+1}</td><td style="text-align:right;white-space:nowrap">${esc(s.name)}</td>${Array.from({length:26},()=>'<td></td>').join('')}</tr>`).join('')}</table></div>`)};
+A.ptt=d=>{const c=clsById(d.id),g=DB.tt[d.id]||{},days=S().days||DAYS,np=+S().periods||7;doPrint(`<div class="pg">${phd('البرنامج الأسبوعي')}<div>${L.cls}: <b>${esc(c.name)}</b></div><table class="pt"><tr><th>اليوم</th>${Array.from({length:np},(_,i)=>`<th>الحصة ${i+1}</th>`).join('')}</tr>${days.map((x,di)=>`<tr><th>${x}</th>${Array.from({length:np},(_,pi)=>`<td>${esc(g[di+'-'+pi]||'')}</td>`).join('')}</tr>`).join('')}</table></div>`)};
+A.pdues=()=>{const l=active().filter(s=>(!ui.fc||s.cid===ui.fc)&&dueOf(s)>0).sort((a,b)=>dueOf(b)-dueOf(a));doPrint(`<div class="pg">${phd('كشف المتأخرين عن الدفع')}<table class="pt"><tr><th>#</th><th>الاسم</th><th>${L.cls}</th><th>هاتف الولي</th><th>المطلوب</th><th>المدفوع</th><th>المتبقي</th></tr>${l.map((s,i)=>`<tr><td>${i+1}</td><td style="text-align:right">${esc(s.name)}</td><td>${esc(clsName(s.cid))}</td><td>${esc(s.phone||'')}</td><td>${money(feeOf(s))}</td><td>${money(paidOf(s.id))}</td><td><b>${money(dueOf(s))}</b></td></tr>`).join('')}<tr><th colspan="6">المجموع</th><th>${money(l.reduce((a,s)=>a+dueOf(s),0))}</th></tr></table></div>`)};
+A.pcert=d=>{const s=stuById(d.id),j=juzOf(s.id);const t=prompt('سبب الشهادة',j>=30?'إتمام حفظ كتاب الله كاملاً':`حفظ ${j} ${j>10?'جزءاً':'أجزاء'} من القرآن الكريم`);if(t==null)return;
+ doPrint(`<div class="pg"><div class="cert">${S().logo?`<img src="${S().logo}" style="width:30mm">`:''}<h2>${esc(S().name)}</h2><h1>شهادة تقدير</h1><p style="font-size:18px;line-height:2.2">يسرّ إدارة ${esc(S().name)} أن تمنح ${s.gender==='f'?'الطالبة':'الطالب'}<br><b style="font-size:26px">${esc(s.name)}</b><br>هذه الشهادة تقديراً ${s.gender==='f'?'لها':'له'} على<br><b>${esc(t)}</b><br>سائلين الله ${s.gender==='f'?'لها':'له'} التوفيق والسداد</p><div class="sig" style="margin-top:30mm"><div>التاريخ: ${today()}</div><div>${esc(S().manager||'الإدارة')}</div><div>الختم</div></div></div></div>`)};
+
+/* ============ التشغيل ============ */
+render();
+/* نهاية e5.js */
+</script>
+</body>
+</html>
+<!-- نهاية الملف: الخنساء لإدارة المدارس -->
