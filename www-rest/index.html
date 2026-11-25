@@ -517,7 +517,7 @@ function render(){if(!DB.ready&&!stack.length&&window.__booted){open('welcome',{
 
 /* ============ عناصر مشتركة ============ */
 const head=(title,right,bk)=>`<header class="hd">${bk?`<button class="ib" data-a="back" aria-label="رجوع">${ic('back')}</button>`:''}<h1>${esc(title)}</h1><div class="hr">${right||''}</div></header>`;
-const navBar=()=>`<nav class="nav">${(LITE?[['pos','الطلبات','pos'],['inv','المنيو','list'],['sales','المبيعات','chart'],['set','الإعدادات','gear']]:[['pos',KIND==='rest'?'الطلبات':'الكاشير','pos'],['inv',KIND==='rest'?'المنيو':'المخزون','box'],['cust','الزبائن','users'],['sales','المبيعات','chart']].concat((EDITION==='acc'||EDITION==='shop')?[['acc','الحسابات','money']].concat(EDITION==='shop'&&S().units?[['vars','الوحدات','box']]:[]):EDITION==='phone'?[['mnt','الصيانة','gear']]:EDITION==='pharm'?[['phx','الصيدلية','box']]:EDITION==='cloth'?[['vars','المقاسات','tag']]:(EDITION==='build'||EDITION==='whole')?[['vars','الوحدات','box'],['acc','الحسابات','money']]:EDITION==='solar'?[['solar','الحاسبة','calc'],['acc','الحسابات','money']]:EDITION==='stat'?[['lists','القوائم','list']]:EDITION==='sweet'?[['pre','الطلبيات','calc']]:EDITION==='bake'?[['pre','الطلبيات','calc'],['prod','الإنتاج','list']]:EDITION==='vet'?[['phx','الصيدلية','box']]:[],[['set','الإعدادات','gear']]))
+const navBar=()=>`<nav class="nav">${(LITE?[['pos','الطلبات','pos'],['inv','المنيو','list'],['sales','المبيعات','chart'],['set','الإعدادات','gear']]:[['pos',KIND==='rest'?'الطلبات':'الكاشير','pos'],['inv',KIND==='rest'?'المنيو':'المخزون','box'],['cust','الزبائن','users'],['sales','المبيعات','chart']].concat((EDITION==='acc'||EDITION==='shop')?[['acc','الحسابات','money']]:EDITION==='phone'?[['mnt','الصيانة','gear']]:EDITION==='pharm'?[['phx','الصيدلية','box']]:EDITION==='cloth'?[['vars','المقاسات','tag']]:(EDITION==='build'||EDITION==='whole')?[['vars','الوحدات','box'],['acc','الحسابات','money']]:EDITION==='solar'?[['solar','الحاسبة','calc'],['acc','الحسابات','money']]:EDITION==='stat'?[['lists','القوائم','list']]:EDITION==='sweet'?[['pre','الطلبيات','calc']]:EDITION==='bake'?[['pre','الطلبيات','calc'],['prod','الإنتاج','list']]:EDITION==='vet'?[['phx','الصيدلية','box']]:[],[['set','الإعدادات','gear']]))
  .map(([k,t,i])=>`<button class="${tab===k?'on':''}" data-a="tab" data-v="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</nav>`;
 const rateChip=()=>userChip()+`<button class="ratechip" data-a="tab" data-v="set">1$ = ${fmt(S().rate)} ل.س</button>`;
 const licBanner=()=>`<button class="lic" data-a="open" data-v="act">${ic('tag')}<span>${esc(licText())}</span><u>تفعيل</u></button>`;
@@ -2112,7 +2112,7 @@ if(PHARM){const _ac=addCart;addCart=function(cn,p,q){const it=_ac(cn,p,q);try{co
 /* نهاية p7.js */
 
 /* ============ الألبسة، مواد البناء، الطاقة الشمسية ============ */
-const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&!!S().units);
+const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&S().units!==false);
 /* المقاسات والألوان / الوحدات: اختيار عند الإضافة للسلة */
 const optsOf=p=>String((CLOTH?p.vars:p.units)||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean);
 if(CLOTH||BUILD||EDITION==='shop'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
@@ -2408,7 +2408,7 @@ if(EDITION==='shop'&&ui.ws===undefined)ui.ws=true;
   <div class="g2 mt"><button class="btn ghost" data-a="cloudnow">${ic('share')} ارفع نسخة هلأ</button><button class="btn ghost" data-a="opensheet" data-v="cloudget">${ic('down')} استرجاع</button></div>`);
  const ex=SX?card('مميزات المحل','شغّل يلي بتحتاجه',`${opt('تعليق الفواتير','بتوقف فاتورة زبون وبتخدم غيره وبترجعلها',sw(s.hold!==false,'tgon','hold'))}${opt('الإرجاع الجزئي','إرجاع قطعة أو أكتر من الفاتورة بدل الفاتورة كلها',sw(s.pret,'tg','pret'))}
   ${opt('التقرير اليومي','تذكير كل يوم ببعت تقرير اليوم لصاحب المحل واتساب',sw(s.repDay,'tg','repDay'))}${s.repDay?opt('وقت التذكير','',seg('rephour',s.repHour||22,[[20,'8 م'],[21,'9 م'],[22,'10 م'],[23,'11 م']])):''}
-  ${EDITION==='shop'?opt('البيع بالوحدات (جملة)','أول ما تكبس على المنتج بيسألك: قطعة، كرتونة، طرد… حسب ما بتحدد لكل منتج',sw(s.units,'tg','units')):''}${opt('سعر التكلفة بفواتير الشراء','',seg('costmode',s.costMode||'avg',[['avg','المتوسط'],['last','آخر سعر']]))}`):'';
+  ${EDITION==='shop'?opt('البيع بالوحدات (دزينة، كرتونة…)','المنتج يلي إله وحدات تعبئة، أول ما تكبس عليه بيسألك: قطعة، دزينة، كرتونة… (الوحدات بتنكتب بصفحة المنتج)',sw(s.units!==false,'tgon','units')):''}${opt('سعر التكلفة بفواتير الشراء','',seg('costmode',s.costMode||'avg',[['avg','المتوسط'],['last','آخر سعر']]))}`):'';
  const demo=EDITION==='shop'?card('البيانات التجريبية','منتجات وزبائن وفواتير شهر كامل لتجرّب التطبيق، وبتنمسح بكبسة',DB.products.some(p=>p.d)?`<button class="btn ghost bad wide" data-a="demodel">${ic('trash')} مسح البيانات التجريبية</button>`:`<button class="btn ghost wide" data-a="demoadd">${ic('plus')} تعبئة بيانات تجريبية</button>`):'';
  const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,ex+cloud+demo+mk):h+ex+cloud+demo}}
 A.tgon=d=>{S()[d.k]=S()[d.k]===false;save();render()};
@@ -2446,6 +2446,37 @@ if(!LITE){
  {const f=repData;repData=function(k){const o=f(k);o.shu=shuSum(o.st-1,o.en);return o}}
 }
 /* نهاية p11.js */
+
+/* ============ p12: وحدات التعبئة (قطعة، دزينة، كرتونة…) من نموذج المنتج ============ */
+const UPK=EDITION==='shop'||BUILD;
+const unitsOf=p=>String(p&&p.units||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean).map(parseOpt).filter(u=>u.f>0);
+const bigUnit=p=>unitsOf(p).filter(u=>u.f>1).sort((a,b)=>b.f-a.f)[0];
+function unitBreak(p,q){const u=bigUnit(p);if(!u||!(q>0))return '';const n=Math.floor(q/u.f+1e-9),r=r3(q-n*u.f);return n?`${fmt(n)} ${u.n}${r?' + '+fq(r):''}`:''}
+if(UPK){
+ {const f=stockBadge;stockBadge=function(p,used,long){const h=f(p,used,long);if(!long||!p.track)return h;const b=unitBreak(p,r3(p.stock-(used||0)));return b?h+`<small style="display:block;margin-top:3px;color:var(--mut)">${esc(b)}</small>`:h}}
+ {const f=readProd;readProd=function(){const d=f();const e=$('#pu');if(e)d.units=e.value.trim();return d}}
+ {const f=P.prod;P.prod=p=>{const d=ui.pd||(ui.pd=newDraft());let h=f(p);
+  h=h.replace('</datalist></label>',`</datalist></label><label class="f" style="margin:12px 0 0">وحدات التعبئة (اختياري)<input id="pu" data-i="pu" value="${esc(d.units||'')}" placeholder="مثال: دزينة=12, كرتونة=24"><small class="sub">الاسم=كم قطعة فيها. وإذا إلها سعر خاص: كرتونة=24@3400</small></label>`);
+  const us=unitsOf({units:d.units}).filter(u=>u.f>1);
+  if(us.length)h=h.replace(/(<label class="f mt" style="[^"]*">الكمية المتوفرة<input id="ps"[^>]*><\/label>)/,`$1<div class="g2" style="${d.track?'':'display:none'}"><label class="f" style="margin:0">أو اكتب العدد<input id="psn" data-i="psn" inputmode="decimal" placeholder="مثلاً 10"></label><label class="f" style="margin:0">من<select id="psu" class="inp" data-i="psn" style="margin:0">${us.map(u=>`<option value="${u.f}">${esc(u.n)} (${u.f})</option>`).join('')}</select></label></div><p class="note" id="psh"></p>`);
+  return h}}
+ IN.pu=v=>{if(ui.pd)ui.pd.units=v};
+ IN.psn=()=>{const n=num(val('psn')),f=num(val('psu'))||1,e=$('#ps'),h=$('#psh');if(!e)return;if(n>0){e.value=r3(n*f);if(h)h.textContent=`= ${fmt(r3(n*f))} قطعة`}else if(h)h.textContent=''};
+ /* بعد كتابة الوحدات، نعيد رسم النموذج لتظهر خانة الإدخال بالوحدة */
+ document.addEventListener('change',e=>{if(e.target&&e.target.id==='pu'&&ui.pd){ui.pd=readProd();render()}});
+ {const f=A.editprod;A.editprod=(d,el,e)=>{f(d,el,e);const p=prodById(d.id);if(p&&ui.pd&&ui.pd.id===p.id){ui.pd.units=p.units||'';render()}}}
+ {const f=A.saveprod;A.saveprod=(d,el,e)=>{const x=readProd(),n=DB.products.length;f(d,el,e);
+  const p=x.id?prodById(x.id):(DB.products.length>n?DB.products[DB.products.length-1]:null);if(p&&p.name===x.name){p.units=x.units||'';flush()}}}
+ /* فاتورة الشراء: الكمية بالوحدة */
+ if(typeof piLines==='function'){
+  const _pl=piLines;piLines=function(){let h=_pl();ui.pi.lines.forEach((l,i)=>{const us=unitsOf(prodById(l.pid)).filter(u=>u.f>1);if(!us.length)return;
+   const sel=`<label class="f" style="margin:6px 0 0">الكمية بـ<select class="inp" data-i="pilu" data-n="${i}" style="margin:0"><option value="1">قطعة</option>${us.map(u=>`<option value="${u.f}" ${+l.u===u.f?'selected':''}>${esc(u.n)} (${u.f})</option>`).join('')}</select></label>`;
+   const mk=`data-k="c" data-n="${i}" inputmode="decimal" value="${esc(l.c)}"></label></div>`;h=h.replace(mk,mk+sel)});return h};
+  IN.pilu=(v,el)=>{const l=ui.pi.lines[+el.dataset.n];if(l)l.u=+v||1};
+  {const f=A.pisave;A.pisave=(d,el,e)=>{if(ui.pi)ui.pi.lines.forEach(l=>{if(+l.u>1){l.q=String(r3(num(l.q)*l.u));l.c=String(Math.round(num(l.c)/l.u*1e4)/1e4);l.u=1}});return f(d,el,e)}}
+ }
+}
+/* نهاية p12.js */
 
 /* ============ التشغيل ============ */
 async function init(){await store.open();const d=await store.get();if(d&&d.settings)adopt(d);applyTheme();

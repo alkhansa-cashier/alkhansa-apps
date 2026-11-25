@@ -1,5 +1,5 @@
 /* ============ الألبسة، مواد البناء، الطاقة الشمسية ============ */
-const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&!!S().units);
+const CLOTH=EDITION==='cloth',BUILD=(EDITION==='build'||EDITION==='whole'),SOLAR=EDITION==='solar',UNITQ=()=>BUILD||(EDITION==='shop'&&S().units!==false);
 /* المقاسات والألوان / الوحدات: اختيار عند الإضافة للسلة */
 const optsOf=p=>String((CLOTH?p.vars:p.units)||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean);
 if(CLOTH||BUILD||EDITION==='shop'){const _ac=addCart;addCart=function(cn,p,q){const o=p&&(CLOTH||UNITQ())&&optsOf(p);if(o&&o.length&&!ui.varPick){ui.varP={cn,p,q};open('varpick',{},true);return null}const v=ui.varPick;ui.varPick=null;
