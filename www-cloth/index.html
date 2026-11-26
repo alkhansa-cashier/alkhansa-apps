@@ -2755,7 +2755,7 @@ A.ecdel=d=>ask(`حذف نوع "${d.v}" من القائمة؟ المصاريف ا
 /* نهاية p15.js */
 
 /* ============ p16: التحديث التلقائي للبرنامج ============ */
-if(window.khDesktop)PACKS[2].price=200; // نسخة اللابتوب مدى الحياة
+if(window.khDesktop){PACKS[2].price=200;PACKS.splice(0,2)} // اللابتوب: تجربة 10 أيام ومدى الحياة بس
 const KHB={v:parseInt('__KHV__',10)||0,f:'__KHF__',k:'__KHK__'};
 const UPD_API='https://api.github.com/repos/alkhansa-cashier/alkhansa-apps/releases?per_page=50';
 async function khUpdCheck(force){
