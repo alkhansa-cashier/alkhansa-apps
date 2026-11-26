@@ -2735,6 +2735,21 @@ A.taxpay=()=>{const a=+S().taxFix||0;if(!a)return;ask(`تسجيل دفع ${txNam
 {const f=repData;repData=function(k){const o=f(k);o.tax=taxSum(o.st-1,o.en);if(o.tax>0){/* ضمن السعر: الضريبة مو ربح */const inc=DB.sales.reduce((a,s)=>a+(!s.refunded&&s.taxM==='incl'&&s.t>=o.st&&s.t<=o.en?conv(s.tax,s.cur,S().cur,s.rate):0),0);o.profit-=inc}return o}}
 window.__k15={taxSum};
 }
+
+/* ============ أنواع المصاريف بتتعدّل من الإعدادات ============ */
+if(!LITE){
+const FIXC=['رواتب','سلف','أخرى'];
+function syncCats(){const c=S().expCats;if(!Array.isArray(c))return;const l=c.filter(x=>!FIXC.includes(x));EXPCATS.length=0;EXPCATS.push(...l,'رواتب','سلف','أخرى')}
+const curCats=()=>EXPCATS.filter(x=>!FIXC.includes(x));
+{const f=SH.expform;SH.expform=p=>{syncCats();return f(p)}}
+{const f=setView;setView=function(){syncCats();let h=f();const c=card('أنواع المصاريف','الأنواع يلي بتطلع لما تسجّل مصروف. ضيف يلي بدك واحذف يلي ما بتحتاجه',
+ `<div class="chips" style="flex-wrap:wrap">${curCats().map(x=>`<button class="chip on" data-a="ecdel" data-v="${esc(x)}">${esc(x)} ✕</button>`).join('')}</div>
+ <div class="frow mt"><label class="f" style="margin:0"><input id="ec_new" placeholder="نوع جديد، مثلاً: مولّدة"></label><button class="btn pri" data-a="ecadd">${ic('plus')}</button></div>
+ <p class="note">"الرواتب" و"السلف" و"أخرى" ثابتين لأن البرنامج بيستعملهن.</p>`);
+ const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,c+mk):h+c}}
+A.ecadd=()=>{const v=val('ec_new').trim();if(!v)return toast('اكتب اسم النوع');const l=curCats();if(l.includes(v)||FIXC.includes(v))return toast('موجود');l.push(v);S().expCats=l;syncCats();save();render();toast('انضاف ✅')};
+A.ecdel=d=>ask(`حذف نوع "${d.v}" من القائمة؟ المصاريف القديمة بتضل متل ما هي.`,'حذف',()=>{S().expCats=curCats().filter(x=>x!==d.v);syncCats();save()},true);
+}
 /* نهاية p15.js */
 
 /* ============ التشغيل ============ */
