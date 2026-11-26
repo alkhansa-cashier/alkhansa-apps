@@ -49,6 +49,7 @@ jobs:
         run: |
           mkdir -p desktop/app
           cp ${{ matrix.dir }}/index.html desktop/app/index.html
+          sed -i "s/__KHV__/${{ github.run_number }}/;s/__KHF__/${{ matrix.file }}/;s/__KHK__/exe/" desktop/app/index.html
 
       - name: Install and build
         shell: bash

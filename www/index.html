@@ -1028,9 +1028,11 @@ async function onlineActivate(code){if(!ADMIN_URL)return 'التفعيل عبر 
 /* ---------- لوحة الإدارة: تسجيل وإعدادات ---------- */
 async function sendReg(){const r=DB.reg;if(!ADMIN_URL||!r||r.sent||!navigator.onLine)return;
  try{await fetch(ADMIN_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a:'reg',dev:DB.lic.dev,owner:r.owner,store:r.store,phone:r.phone,kind:r.kind,t:r.t,ver:VERSION})});r.sent=Date.now();save()}catch(e){}}
+function rateFor(r){let x=+((r||{}).rate)||0;if(x>0&&x<2000&&(+S().rate||0)>=2000)x=Math.round(x*100);return x}
+function rateSane(x){const c=+S().rate||0;return !c||Math.abs(x-c)/c<=0.2}
 async function fetchRemote(){if(!ADMIN_URL||!navigator.onLine)return;
  try{const r=await (await fetch(`${ADMIN_URL}?a=config&dev=${DB.lic.dev}&ver=${VERSION}`)).json();if(!r)return;DB.remote=Object.assign({t:Date.now()},r);
-  const rt=+r.rate;if(rt>0&&rt!==S().rate&&S().rateAuto){S().rate=rt;S().rateAt=Date.now();logA('تحديث سعر الصرف تلقائياً إلى '+fmt(rt));toast('تم تحديث سعر الصرف إلى '+fmt(rt))}
+  const rt=rateFor(r);if(rt>0&&rt!==S().rate&&S().rateAuto&&rateSane(rt)){S().rate=rt;S().rateAt=Date.now();logA('تحديث سعر الصرف تلقائياً إلى '+fmt(rt));toast('تم تحديث سعر الصرف إلى '+fmt(rt))}
   save();if(r.force&&verNewer(r.ver))open('upd',{},true);else render()}catch(e){}}
 const verNewer=v=>{if(!v)return false;const a=String(v).split('.').map(Number),b=VERSION.split('.').map(Number);for(let i=0;i<3;i++){if((a[i]||0)>(b[i]||0))return true;if((a[i]||0)<(b[i]||0))return false}return false};
 
@@ -1102,7 +1104,7 @@ async function squeezeImg(f){const im=await loadImg(await readFile(f,true));if(!
 function notices(){const r=DB.remote||{},h=[];
  if(r.ver&&verNewer(r.ver)&&!ui.updLater)h.push(`<div class="warn" style="flex-wrap:wrap">${ic('bell')}<span style="flex:1">يوجد تحديث جديد ${esc(r.ver)}${r.notes?': '+esc(r.notes):''}</span><button class="btn sm pri" data-a="doupd">تحديث الآن</button><button class="btn sm ghost" data-a="updlater">لاحقاً</button></div>`);
  if(r.msg&&r.msg.id&&S().seenMsg!==r.msg.id)h.push(`<div class="warn">${ic('bell')}<span style="flex:1">${esc(r.msg.text||'')}</span><button class="ib sm" data-a="seenmsg" aria-label="إغلاق">${ic('x')}</button></div>`);
- if(+r.rate>0&&+r.rate!==S().rate&&!S().rateAuto)h.push(`<div class="warn">${ic('money')}<span style="flex:1">سعر الصرف المقترح اليوم: ${fmt(+r.rate)} ل.س</span><button class="btn sm pri" data-a="applyrate">اعتماد</button></div>`);
+ if(rateFor(r)>0&&rateFor(r)!==S().rate&&(!S().rateAuto||!rateSane(rateFor(r))))h.push(`<div class="warn">${ic('money')}<span style="flex:1">سعر الصرف المقترح اليوم: ${fmt(rateFor(r))} ل.س</span><button class="btn sm pri" data-a="applyrate">اعتماد</button></div>`);
  if(bkDue())h.push(`<button class="warn" data-a="sharebk">${ic('down')}<span style="flex:1">ما في نسخة احتياطية من فترة. اكبس هون لحفظ نسخة على Drive أو واتساب</span></button>`);
  if(isAdminView()){const now=Date.now();
   if(S().repWeek&&now-(S().lastRepW||now)>7*DAY)h.push(`<button class="warn" data-a="repnow" data-v="week">${ic('chart')}<span style="flex:1">صار وقت التقرير الأسبوعي</span></button>`);
@@ -1390,7 +1392,7 @@ Object.assign(A,{
  shade:(d,el,e)=>{const t=topE();if(e.target!==el||!t)return;if(['welcome','perms','upd'].includes(t.name)||(t.name==='terms'&&t.p.id!=='view')||(t.name==='who'&&ui.whoForce))return;back()},
  stab:d=>{ui.stab=d.v;render()},
  seenmsg:()=>{S().seenMsg=(DB.remote&&DB.remote.msg||{}).id;save();render()},
- applyrate:()=>{const r=+(DB.remote||{}).rate;if(r>0){S().rate=r;S().rateAt=Date.now();logA('اعتماد سعر الصرف المقترح '+fmt(r));save();toast('تم اعتماد سعر الصرف');render()}},
+ applyrate:()=>{const r=rateFor(DB.remote);if(r>0){S().rate=r;S().rateAt=Date.now();logA('اعتماد سعر الصرف المقترح '+fmt(r));save();toast('تم اعتماد سعر الصرف');render()}},
  doupd:()=>{const u=(DB.remote||{}).url||SITE;try{window.open(u,'_system')}catch(e){location.href=u}},
  updlater:()=>{ui.updLater=true;if(topE()&&topE().name==='upd')back();else render()},
  sharebk:async()=>{const ok=await shareFile(bkName(Date.now()),'application/json',JSON.stringify(Object.assign({kh:'backup',v:VERSION},DB)));if(ok!==false){S().lastShare=Date.now();logA('حفظ نسخة احتياطية خارج الجهاز');save();render()}},
@@ -1593,8 +1595,8 @@ async function adminCheck(){if(!ADMIN_URL||!navigator.onLine||!DB.ready)return;c
  const q=new URLSearchParams({a:'check',dev:l.dev,store:S().store||'',owner:S().ownerName||'',phone:S().phone||'',kind:APPNAME,ver:VERSION,until:String(l.until||0),first:String(l.first||0)});
  try{const r=await (await fetch(ADMIN_URL+'?'+q.toString())).json();if(!r||!r.ok)return;
   const was=licCan();l.lastOk=Date.now();l.blocked=r.status==='stop';l.until=+r.until||0;if(r.first&&r.first<(l.first||Infinity))l.first=+r.first;
-  DB.remote=Object.assign({t:Date.now()},r);const rt=+r.rate;
-  if(rt>0&&rt!==S().rate&&S().rateAuto){S().rate=rt;S().rateAt=Date.now();logA('تحديث سعر الصرف تلقائياً إلى '+fmt(rt));toast('تم تحديث سعر الصرف إلى '+fmt(rt))}
+  DB.remote=Object.assign({t:Date.now()},r);const rt=rateFor(r);
+  if(rt>0&&rt!==S().rate&&S().rateAuto&&rateSane(rt)){S().rate=rt;S().rateAt=Date.now();logA('تحديث سعر الصرف تلقائياً إلى '+fmt(rt));toast('تم تحديث سعر الصرف إلى '+fmt(rt))}
   flush();if(was&&!licCan())toast(licText(),8000);
   if(r.force&&verNewer(r.ver)&&!(topE()&&topE().name==='upd'))open('upd',{},true);else render()}catch(e){}}
 
@@ -2735,7 +2737,51 @@ A.taxpay=()=>{const a=+S().taxFix||0;if(!a)return;ask(`تسجيل دفع ${txNam
 {const f=repData;repData=function(k){const o=f(k);o.tax=taxSum(o.st-1,o.en);if(o.tax>0){/* ضمن السعر: الضريبة مو ربح */const inc=DB.sales.reduce((a,s)=>a+(!s.refunded&&s.taxM==='incl'&&s.t>=o.st&&s.t<=o.en?conv(s.tax,s.cur,S().cur,s.rate):0),0);o.profit-=inc}return o}}
 window.__k15={taxSum};
 }
+
+/* ============ أنواع المصاريف بتتعدّل من الإعدادات ============ */
+if(!LITE){
+const FIXC=['رواتب','سلف','أخرى'];
+function syncCats(){const c=S().expCats;if(!Array.isArray(c))return;const l=c.filter(x=>!FIXC.includes(x));EXPCATS.length=0;EXPCATS.push(...l,'رواتب','سلف','أخرى')}
+const curCats=()=>EXPCATS.filter(x=>!FIXC.includes(x));
+{const f=SH.expform;SH.expform=p=>{syncCats();return f(p)}}
+{const f=setView;setView=function(){syncCats();let h=f();const c=card('أنواع المصاريف','الأنواع يلي بتطلع لما تسجّل مصروف. ضيف يلي بدك واحذف يلي ما بتحتاجه',
+ `<div class="chips" style="flex-wrap:wrap">${curCats().map(x=>`<button class="chip on" data-a="ecdel" data-v="${esc(x)}">${esc(x)} ✕</button>`).join('')}</div>
+ <div class="frow mt"><label class="f" style="margin:0"><input id="ec_new" placeholder="نوع جديد، مثلاً: مولّدة"></label><button class="btn pri" data-a="ecadd">${ic('plus')}</button></div>
+ <p class="note">"الرواتب" و"السلف" و"أخرى" ثابتين لأن البرنامج بيستعملهن.</p>`);
+ const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,c+mk):h+c}}
+A.ecadd=()=>{const v=val('ec_new').trim();if(!v)return toast('اكتب اسم النوع');const l=curCats();if(l.includes(v)||FIXC.includes(v))return toast('موجود');l.push(v);S().expCats=l;syncCats();save();render();toast('انضاف ✅')};
+A.ecdel=d=>ask(`حذف نوع "${d.v}" من القائمة؟ المصاريف القديمة بتضل متل ما هي.`,'حذف',()=>{S().expCats=curCats().filter(x=>x!==d.v);syncCats();save()},true);
+}
 /* نهاية p15.js */
+
+/* ============ p16: التحديث التلقائي للبرنامج ============ */
+const KHB={v:parseInt('__KHV__',10)||0,f:'__KHF__',k:'__KHK__'};
+const UPD_API='https://api.github.com/repos/alkhansa-cashier/alkhansa-apps/releases?per_page=50';
+async function khUpdCheck(force){
+ if(!KHB.v||KHB.f.indexOf('__')===0||!navigator.onLine)return null;
+ if(!force&&ui.khUpd!==undefined&&Date.now()-(ui.khUpdAt||0)<6*3600e3)return ui.khUpd;
+ try{const l=await (await fetch(UPD_API,{headers:{Accept:'application/vnd.github+json'}})).json();if(!Array.isArray(l))return null;
+  const re=new RegExp('^'+KHB.f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'-(\\d+)\\.'+KHB.k+'$');let best=null;
+  for(const r of l)for(const a of (r.assets||[])){const m=re.exec(a.name);if(m&&+m[1]>KHB.v&&(!best||+m[1]>best.n))best={n:+m[1],url:a.browser_download_url,mb:Math.round((a.size||0)/1048576),notes:r.body||''}}
+  ui.khUpd=best;ui.khUpdAt=Date.now();render();return best}catch(e){return null}}
+window.__k16={KHB,khUpdCheck};
+const updBan=()=>{const u=ui.khUpd;return u&&!ui.khUpdHide?`<div class="warn" style="background:#E8F7EE;border-color:#2E9D5B">${ic('down')}<span style="flex:1"><b>في تحديث جديد للبرنامج</b>${u.mb?` (${u.mb} ميغا)`:''}</span><button class="btn sm pri" data-a="khupd">تحديث</button><button class="btn sm ghost" data-a="khupdx">بعدين</button></div>`:''};
+{const f=notices;notices=function(){return updBan()+f()}}
+{const f=vPos;vPos=function(){const h=f(),b=updBan();return b&&!h.includes('data-a="khupdx"')?h.replace('<main class="main">','<main class="main">'+b):h}}
+{const f=setView;setView=function(){let h=f();if(!KHB.v)return h;const u=ui.khUpd;
+ const c=card('تحديث البرنامج',`رقم النسخة يلي عندك: ${KHB.v}`,u?`<p class="note">في نسخة أجدد: <b>${u.n}</b></p><button class="btn pri full" data-a="khupd">${ic('down')} تحديث هلأ</button>`:`<button class="btn ghost full" data-a="khupdchk">فحص إذا في تحديث</button>`);
+ const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,c+mk):h+c}}
+A.khupdx=()=>{ui.khUpdHide=true;render()};
+A.khupdchk=async()=>{if(!navigator.onLine)return toast('ما في إنترنت');toast('عم نفحص…');const u=await khUpdCheck(true);if(!u)toast('نسختك هي الأحدث ✅')};
+A.khupd=async()=>{const u=ui.khUpd;if(!u)return;
+ try{if(typeof cloudUp==='function')await cloudUp(true)}catch(e){}
+ logA('تحديث البرنامج إلى النسخة '+u.n);flush();
+ if(window.khDesktop&&window.khDesktop.update){toast('عم ينزل التحديث… لا تسكّر البرنامج',60000);
+  try{window.khDesktop.onUpd&&window.khDesktop.onUpd(p=>toast(`عم ينزل التحديث ${p}%… لا تسكّر البرنامج`,60000));await window.khDesktop.update(u.url)}catch(e){toast('ما زبط التنزيل، جرّب كمان مرة',6000)}return}
+ toast('رح ينزل الملف، بعدين اضغط عليه واختار "تثبيت". بياناتك ما بتنمسح',9000);
+ setTimeout(()=>{try{window.open(u.url,'_system')}catch(e){location.href=u.url}},1200)};
+setTimeout(()=>khUpdCheck(),8000);setInterval(()=>khUpdCheck(),6*3600e3);
+/* نهاية p16.js */
 
 /* ============ التشغيل ============ */
 async function init(){await store.open();const d=await store.get();if(d&&d.settings)adopt(d);applyTheme();

@@ -13,7 +13,7 @@ function settings_() {
   const t = SpreadsheetApp.getActive().getSheetByName(SH_SET);
   const v = t.getRange(1, 2, 7, 1).getValues().map(r => r[0]);
   return {
-    rate: +v[0] || 0,
+    rate: rateNow_(v[0]),
     msg: v[1] ? { id: String(v[2] || 1), text: String(v[1]) } : null,
     ver: String(v[3] || ''), url: String(v[4] || ''),
     force: v[5] === 'نعم', notes: String(v[6] || '')
@@ -40,7 +40,7 @@ function handle_(p) {
     if (p.phone && !row[3]) s.getRange(r, 4).setValue("'" + p.phone);
     if (p.kind) s.getRange(r, 5).setValue(p.kind);
     s.getRange(r, 10).setValue(now);
-    if (p.ver) s.getRange(r, 11).setValue(p.ver);
+    if (p.ver) s.getRange(r, 11).setValue("'" + p.ver);
     let until = row[6] instanceof Date ? row[6].getTime() : 0;
     const local = +p.until || 0;
     if (!until && local > Date.now()) {

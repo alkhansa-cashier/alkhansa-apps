@@ -94,6 +94,9 @@ jobs:
           sed -i "s/versionName \"1.0\"/versionName \"1.1.${{ env.VC }}\"/" android/app/build.gradle
           cat $M
 
+      - name: Build number for updates
+        run: sed -i "s/__KHV__/${{ env.VC }}/;s/__KHF__/${{ matrix.file }}/;s/__KHK__/apk/" ${{ matrix.dir }}/index.html
+
       - name: Copy web files
         run: npx cap sync android
 

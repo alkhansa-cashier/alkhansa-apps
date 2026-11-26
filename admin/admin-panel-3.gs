@@ -1,6 +1,7 @@
 // لوحة الخنساء: الدفعة 3 (النسخ الاحتياطي السحابي على Google Drive)
 const SH_BK = 'النسخ السحابية', BK_ROOT = 'الخنساء - نسخ احتياطية', BK_KEEP = 10;
 function route_(p) {
+  if (p.a === 'rate') return Object.assign({ ok: true }, rateInfo_());
   if (p.a === 'bk') return bk_(p);
   if (p.a === 'bkget') return bkget_(p);
   return handle_(p);

@@ -1,5 +1,7 @@
 // الخنساء: نسخة الويندوز (Electron)
-const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu, net } = require('electron');
+const fs = require('fs');
+const { spawn } = require('child_process');
 const path = require('path');
 let win;
 
@@ -24,6 +26,30 @@ else {
   app.whenReady().then(create);
   app.on('window-all-closed', () => app.quit());
 }
+
+// تحديث البرنامج: بينزّل ملف التثبيت الجديد وبيشغّلو وبيسكّر البرنامج
+ipcMain.handle('update', async (e, url) => {
+  if (!/^https:\/\/github\.com\/alkhansa-cashier\/alkhansa-apps\/releases\/download\//.test(String(url))) throw new Error('bad url');
+  const f = path.join(app.getPath('temp'), 'AlKhansa-Update-' + Date.now() + '.exe');
+  const r = await net.fetch(url);
+  if (!r.ok) throw new Error('http ' + r.status);
+  const total = +r.headers.get('content-length') || 0;
+  const reader = r.body.getReader();
+  const out = fs.createWriteStream(f);
+  let got = 0, last = -1;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    out.write(Buffer.from(value));
+    got += value.length;
+    const p = total ? Math.floor(got * 100 / total) : 0;
+    if (p !== last && p % 5 === 0) { last = p; win.webContents.send('upd-p', p); }
+  }
+  await new Promise(res => out.end(res));
+  spawn(f, [], { detached: true, stdio: 'ignore' }).unref();
+  setTimeout(() => app.quit(), 1500);
+  return true;
+});
 
 ipcMain.handle('printers', async () => {
   const l = await win.webContents.getPrintersAsync();
