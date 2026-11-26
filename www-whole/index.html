@@ -1991,10 +1991,10 @@ Object.assign(A,{
 });
 
 /* ============ قسم المراقبة بإغلاق الصندوق ============ */
-function monCalc(since){const C=S().cur,o={ref:[0,0],meal:[0,0],disc:[0,0],man:[0,0],void:[0,0],pe:0,exp:[0,0],tip:[0,0]};
+function monCalc(since){const C=S().cur,o={ref:[0,0],meal:[0,0],disc:[0,0],man:[0,0],void:[0,0],pe:0,exp:[0,0],tip:[0,0],ed:[0,0]};
  for(const s of DB.sales){if(s.refunded&&s.refunded>since){o.ref[0]++;o.ref[1]+=conv(s.total,s.cur,C,s.rate)}
   if(s.t>since&&!s.refunded){if(s.disc>0){o.disc[0]++;o.disc[1]+=conv(s.disc,s.cur,C,s.rate)}for(const i of s.items)if(!i.pid){o.man[0]++;o.man[1]+=conv(i.price*i.qty,s.cur,C,s.rate)}}
-  if(s.payEdit&&s.payEdit.t>since)o.pe++}
+  if(s.payEdit&&s.payEdit.t>since)o.pe++;for(const x of s.edits||[])if(x.t>since){o.ed[0]++;if(x.new<x.old)o.ed[1]+=conv(x.old-x.new,s.cur,C,s.rate)}}
  for(const m of DB.meals||[])if(m.t>since){o.meal[0]++;o.meal[1]+=conv(m.val,m.cur,C)}
  for(const v of DB.voids||[])if(v.t>since){o.void[0]++;o.void[1]+=v.qty}
  for(const e of DB.expenses)if(e.t>since){o.exp[0]++;o.exp[1]+=conv(e.amt,e.cur,C)}
@@ -2002,7 +2002,7 @@ function monCalc(since){const C=S().cur,o={ref:[0,0],meal:[0,0],disc:[0,0],man:[
  return o}
 const monRows=since=>{const o=monCalc(since),m=v=>money(roundM(v));return [
  ['إرجاع فواتير',o.ref[0],o.ref[0]?m(o.ref[1]):''],['ضيافة ووجبات عمال',o.meal[0],o.meal[0]?m(o.meal[1]):''],['فواتير فيها خصم',o.disc[0],o.disc[0]?m(o.disc[1]):''],
- ['أصناف يدوية (سعر مكتوب باليد)',o.man[0],o.man[0]?m(o.man[1]):''],['إلغاءات بعد المطبخ',o.void[0],o.void[0]?fmt(o.void[1])+' قطعة':''],['تعديل طريقة الدفع',o.pe,''],
+ ['أصناف يدوية (سعر مكتوب باليد)',o.man[0],o.man[0]?m(o.man[1]):''],['إلغاءات بعد المطبخ',o.void[0],o.void[0]?fmt(o.void[1])+' قطعة':''],['تعديل طريقة الدفع',o.pe,''],['تعديل فواتير بعد الدفع',o.ed[0],o.ed[1]?'نقصت '+m(o.ed[1]):''],
  ['مصاريف',o.exp[0],o.exp[0]?m(o.exp[1]):''],['بخشيش موزّع',o.tip[0],o.tip[0]?m(o.tip[1]):'']].filter(r=>KIND==='rest'||!/المطبخ|بخشيش|ضيافة/.test(r[0]))};
 function monText(since){if(LITE)return '';return '\n──────────\n🔎 *المراقبة*\n'+monRows(since).map(([t,n,v])=>`${n?'⚠️':'✅'} ${t}: ${n}${v?' ('+v+')':''}`).join('\n')}
 {const _tc=tabClose;tabClose=function(){const h=_tc();if(LITE)return h;const c=drawerCalc(),rows=monRows(c.since);
@@ -2838,6 +2838,69 @@ if(!LITE&&typeof DT==='function'){
  },true);
 }
 /* نهاية الاختصارات */
+
+/* ============ p17: تعديل طلب مدفوع (المطاعم) ============ */
+if(KIND==='rest'&&!LITE){
+ const lastCloseT=()=>(DB.closes&&DB.closes[0]&&DB.closes[0].t)||0;
+ const reditWhy=s=>{if(!s||s.refunded||s.ret||s.quote)return 'هالفاتورة ما بتتعدّل';if(s.remaining>0)return 'الفاتورة عليها دين، عدّلها من الزبون';
+  if(s.method==='mix'||s.shu)return 'مدفوعة بطريقة مختلطة أو بالدولار، استعمل الإرجاع';if(s.t<=lastCloseT())return 'الصندوق تسكّر بعد هالفاتورة، ما عاد فيك تعدّلها';return ''};
+ const key=i=>(i.pid||i.name)+'|'+(i.note||'');
+ function reditDiff(s,cart){const a={},b={},nm={};for(const i of s.items){const k=key(i);a[k]=(a[k]||0)+i.qty;nm[k]=i}for(const i of cart){const k=key(i);b[k]=(b[k]||0)+i.qty;nm[k]=nm[k]||i}
+  const add=[],rem=[];for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const d=r3((b[k]||0)-(a[k]||0));if(d>0)add.push({it:nm[k],q:d});else if(d<0)rem.push({it:nm[k],q:-d})}return {add,rem}}
+ function reditCalc(s){const cart=carts.sale,sub=cartTotal(cart),disc=s.dpct>0?roundM(sub*s.dpct/100):Math.min(s.disc||0,sub),tx=taxOf(cart,sub,disc),total=roundM(sub-disc+tx.add);
+  return {sub,disc,tx,total,delta:roundM(total-conv(s.total,s.cur,S().cur,s.rate))}}
+ /* زر بالفاتورة */
+ {const f=P.sale;P.sale=p=>{let h=f(p);const s=DB.sales.find(x=>x.id===p.id);if(!s)return h;
+  if((s.edits||[]).length)h=h.replace('<div class="card">',`<div class="warn" style="display:block">✏️ <b>تعدّلت بعد الدفع ${s.edits.length} مرة</b>${s.edits.map(x=>`<div class="note" style="margin-top:4px">${dt(x.t)} · ${esc(x.by||'')} · ${money(x.old)} ← ${money(x.new)}${x.ch?'<br>'+esc(x.ch):''}</div>`).join('')}</div><div class="card">`);
+  if(!reditWhy(s)&&!monOn())h=h.replace('<div class="acts">',`<div class="acts"><button class="btn ghost" data-a="redit" data-id="${s.id}">✏️ تعديل الطلب</button>`);
+  return h}}
+ A.redit=d=>{const s=DB.sales.find(x=>x.id===d.id),w=reditWhy(s);if(w)return toast(w,5000);
+  if(carts.sale.length||ui.ord)return toast('خلّص الطلب يلي مفتوح أو احفظو أول',5000);
+  const cur=S().cur;carts.sale=JSON.parse(JSON.stringify(s.items)).map(i=>Object.assign(i,{price:roundM(conv(i.price,s.cur,cur,s.rate)),cost:i.cost?roundM(conv(i.cost,s.cur,cur,s.rate)):0,sent:i.qty,sentNote:i.note||''}));
+  ui.redit={id:s.id};ui.sel='';back(()=>{tab='pos'},stack.length);setTimeout(()=>{tab='pos';render()},50);toast('زيد أو شيل أصناف، وبعدين اكبس "حفظ التعديل"',5000)};
+ A.reditx=()=>{ui.redit=null;carts.sale=[];render();toast('انلغى التعديل')};
+ /* شريط التعديل فوق الكاشير */
+ {const f=vRest;vRest=function(){let h=f();const r=ui.redit,s=r&&DB.sales.find(x=>x.id===r.id);if(!s)return h;const c=reditCalc(s);
+  const bar=`<div class="warn" style="display:block;border-color:#E0A100;background:#FFF7E0"><b>✏️ عم تعدّل الفاتورة رقم ${s.no}${s.ord&&s.ord.no?' (طلب '+s.ord.no+')':''}</b><div class="note">كانت ${money(roundM(conv(s.total,s.cur,S().cur,s.rate)))} · صارت ${money(c.total)}${c.delta?` · <b style="color:${c.delta>0?'var(--ok)':'var(--bad)'}">${c.delta>0?'الزبون بيدفع '+money(c.delta):'رجّع للزبون '+money(-c.delta)}</b>`:''}</div>
+   <div class="g2 mt"><button class="btn pri" data-a="reditgo">${ic('check')} حفظ التعديل</button><button class="btn ghost" data-a="reditx">إلغاء التعديل</button></div></div>`;
+  return h.replace(`<main class="main">${licBanner()}`,`<main class="main">${licBanner()}`+bar)}}
+ /* الدفع أو المطبخ وقت التعديل بيروحوا لحفظ التعديل */
+ for(const n of ['checkout','sendk','holdord','editord','cancelord'])if(A[n]){const f=A[n];A[n]=(d,el,e)=>ui.redit?(n==='cancelord'?A.reditx():A.reditgo()):f(d,el,e)}
+ A.reditgo=()=>{const s=ui.redit&&DB.sales.find(x=>x.id===ui.redit.id);if(!s){ui.redit=null;return render()}
+  if(!carts.sale.length)return toast('الفاتورة فاضية. إذا بدك تلغيها كلها استعمل "إرجاع الفاتورة"',6000);open('redit',{},true)};
+ SH.redit=()=>{const s=ui.redit&&DB.sales.find(x=>x.id===ui.redit.id);if(!s)return '';const c=reditCalc(s),df=reditDiff(s,carts.sale);
+  const li=(l,sg)=>l.map(x=>`<div class="kv"><span>${sg} ${esc(x.it.name)}${x.it.note?' ('+esc(x.it.note)+')':''}</span><b>${fq(x.q)}</b></div>`).join('');
+  return `<h3>تأكيد تعديل الفاتورة ${s.no}</h3>${df.add.length||df.rem.length?li(df.add,'➕')+li(df.rem,'➖'):'<p class="note">ما في تغيير بالأصناف</p>'}
+   <div class="kv mt"><span>كانت</span><b>${money(roundM(conv(s.total,s.cur,S().cur,s.rate)))}</b></div><div class="kv"><span>صارت</span><b>${money(c.total)}</b></div>
+   ${c.delta?`<div class="tag lg mt" style="justify-content:center;${c.delta<0?'background:var(--badbg);color:var(--bad)':''}"><span>${c.delta>0?'خود من الزبون '+money(c.delta):'رجّع للزبون '+money(-c.delta)}</span></div>`:''}
+   <button class="btn pri wide mt" data-a="reditok">${ic('check')} تأكيد${df.add.length||df.rem.length?' وإرسال للمطبخ':''}</button>`};
+ A.reditok=()=>{const s=ui.redit&&DB.sales.find(x=>x.id===ui.redit.id);if(!s)return;const df=reditDiff(s,carts.sale);
+  if(df.rem.length&&S().reditPin&&ownerPinSet())return guardPin(()=>reditApply(s,df));reditApply(s,df)};
+ function reditApply(s,df){const c=reditCalc(s),cur=S().cur,old=roundM(conv(s.total,s.cur,cur,s.rate)),oldPaid=roundM(conv(s.paid,s.cur,cur,s.rate));
+  /* المخزون */
+  for(const i of s.items){const p=i.pid&&prodById(i.pid),q=r3(i.qty*(i.uq||1));if(p){if(p.track)p.stock=r3(p.stock+q);p.sold=Math.max(0,r3((p.sold||0)-q))}}
+  const items=carts.sale.map(i=>Object.assign({pid:i.pid||'',name:i.name,price:i.price,cost:i.cost||0,qty:i.qty,note:i.note||''},i.uq>1?{uq:i.uq}:{}));
+  for(const i of items){const p=i.pid&&prodById(i.pid),q=r3(i.qty*(i.uq||1));if(p){if(p.track)p.stock=r3(p.stock-q);p.sold=r3((p.sold||0)+q)}}
+  const ch=df.add.map(x=>'+'+fq(x.q)+' '+x.it.name).concat(df.rem.map(x=>'-'+fq(x.q)+' '+x.it.name)).join('، ');
+  (s.edits=s.edits||[]).push({t:Date.now(),by:curUserName(),old,new:c.total,ch});
+  Object.assign(s,{cur,rate:S().rate,items,sub:c.sub,disc:c.disc,tax:c.tx.tax,total:c.total,paid:roundM(oldPaid+c.delta),remaining:0});
+  if(!DB.voids)DB.voids=[];const ol=s.ord?ordLabel(Object.assign({},s.ord,{no:0})):'';
+  for(const x of df.rem)DB.voids.unshift({id:uid(),t:Date.now(),no:s.ord&&s.ord.no||s.no,ord:ol+' (بعد الدفع)',name:x.it.name,qty:x.q,by:curUserName(),paid:true});
+  logA(`تعديل فاتورة مدفوعة رقم ${s.no}: ${money(old)} ← ${money(c.total)} (${ch||'بدون تغيير أصناف'})`);
+  carts.sale=[];ui.redit=null;flush();
+  /* المطبخ: بس التعديلات */
+  const lines=df.add.map(x=>({name:x.it.name,qty:x.q,note:x.it.note||'',pid:x.it.pid||''})).concat(df.rem.map(x=>({name:'إلغاء: '+x.it.name,qty:x.q,note:x.it.note||''})));
+  back(()=>{open('sale',{id:s.id})});
+  if(lines.length){const o=Object.assign({no:(s.ord&&s.ord.no)||s.no,type:'take',t:s.t,items:items},s.ord||{});ui.kt={o:JSON.parse(JSON.stringify(o)),lines,add:true};
+   setTimeout(()=>{if(S().onePr||(S().kst||[]).length||(S().autoK&&(ble.k.ch||ble.c.ch)))kSend(ui.kt.o,lines,true);else open('kt',{},true)},400)}
+  toast(c.delta>0?'خود من الزبون '+money(c.delta):c.delta<0?'رجّع للزبون '+money(-c.delta):'تم التعديل',7000);
+  try{cloudUp(true)}catch(e){}}
+ {const f=A.refund;if(f)A.refund=(d,el,e)=>S().reditPin&&ownerPinSet()?guardPin(()=>f(d,el,e)):f(d,el,e)}
+ /* إعداد: رمز صاحب المطعم لتنقيص صنف */
+ {const f=setView;setView=function(){let h=f();const c=card('تعديل الطلب بعد الدفع','إذا الزبون دفع وبدو يزيد أو يشيل صنف',`${opt('رمز صاحب المطعم لتنقيص صنف','إذا مطفي، أي كاشير بيقدر يشيل، وبينسجّل بالمراقبة وسجل الإلغاءات',sw(!!S().reditPin,'tg','reditPin'))}${S().reditPin&&!ownerPinSet()?'<p class="note" style="color:var(--bad)">لازم تحط رمز صاحب المحل أول (من خانة رمز الصافي)</p>':''}`);
+  const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,c+mk):h+c}}
+}
+/* نهاية p17.js */
 
 /* ============ التشغيل ============ */
 async function init(){await store.open();const d=await store.get();if(d&&d.settings)adopt(d);applyTheme();
