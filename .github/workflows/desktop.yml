@@ -66,10 +66,15 @@ jobs:
         run: cp desktop/dist/*.exe ${{ matrix.file }}-${{ github.run_number }}.exe
 
       - name: Publish
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: windows-${{ github.run_number }}
-          name: AlKhansa Windows ${{ github.run_number }}
-          files: ${{ matrix.file }}-${{ github.run_number }}.exe
-          prerelease: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          T=windows-${{ github.run_number }}; F=${{ matrix.file }}-${{ github.run_number }}.exe
+          for i in 1 2 3 4 5 6 7 8; do
+            gh release view $T -R ${{ github.repository }} >/dev/null 2>&1 || gh release create $T -R ${{ github.repository }} --title "AlKhansa Windows ${{ github.run_number }}" --prerelease --target ${{ github.sha }} --notes "" >/dev/null 2>&1 || true
+            gh release upload $T "$F" --clobber -R ${{ github.repository }} && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          exit 1
 # نهاية الملف: desktop.yml

@@ -110,10 +110,15 @@ jobs:
         run: cp android/app/build/outputs/apk/release/app-release.apk ${{ matrix.file }}-${{ env.VC }}.apk
 
       - name: Publish APK
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ env.VC }}
-          name: AlKhansa build ${{ env.VC }}
-          files: ${{ matrix.file }}-${{ env.VC }}.apk
-          prerelease: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          T=build-${{ env.VC }}; F=${{ matrix.file }}-${{ env.VC }}.apk
+          for i in 1 2 3 4 5 6 7 8; do
+            gh release view $T -R ${{ github.repository }} >/dev/null 2>&1 || gh release create $T -R ${{ github.repository }} --title "AlKhansa build ${{ env.VC }}" --prerelease --target ${{ github.sha }} --notes "" >/dev/null 2>&1 || true
+            gh release upload $T "$F" --clobber -R ${{ github.repository }} && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          exit 1
 # نهاية الملف: build.yml
