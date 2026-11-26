@@ -2478,19 +2478,35 @@ const UPK=EDITION==='shop'||EDITION==='acc'||BUILD;
 const unitsOf=p=>String(p&&p.units||'').split(/[،,]/).map(x=>x.trim()).filter(Boolean).map(parseOpt).filter(u=>u.f>0);
 const bigUnit=p=>unitsOf(p).filter(u=>u.f>1).sort((a,b)=>b.f-a.f)[0];
 function unitBreak(p,q){const u=bigUnit(p);if(!u||!(q>0))return '';const n=Math.floor(q/u.f+1e-9),r=r3(q-n*u.f);return n?`${fmt(n)} ${u.n}${r?' + '+fq(r):''}`:''}
+const UNAMES=['كرتونة','دزينة','طرد','علبة','شوال','ربطة','باكيت','صندوق'];
+const unitRows=d=>{if(!d.urows)d.urows=unitsOf({units:d.units}).filter(u=>u.f>1).map(u=>({n:u.n,f:String(u.f),p:u.p?String(u.p):''}));return d.urows};
+const unitSer=rows=>rows.filter(r=>r.n.trim()&&num(r.f)>1).map(r=>`${r.n.trim().replace(/[=@,،]/g,' ')}=${num(r.f)}${num(r.p)>0?'@'+num(r.p):''}`).join(', ');
+function unitHint(d,r){const pp=num(($('#pp')||{}).value||d.price||0),f=num(r.f);if(!(f>1))return 'اكتب كم قطعة فيها';
+ return num(r.p)>0?`سعر ال${esc(r.n||'وحدة')} يلي كتبتو`:(pp>0?`سعرها تلقائي = ${fmt(pp)} × ${fmt(f)} = <b>${fmt(roundM(pp*f))}</b>`:'سعرها تلقائي = سعر القطعة × العدد')}
+function unitEd(d){const rows=unitRows(d);
+ return `<div><b>📦 البيع بالكرتونة أو الدزينة (اختياري)</b><p class="note" style="margin:4px 0 8px">إذا بتبيع هالمنتج بالقطعة وكمان بالكرتونة مثلاً، زيدها هون. المخزون بيضل محسوب بالقطع.</p>
+ <input type="hidden" id="pu" value="${esc(unitSer(rows))}"><datalist id="unames">${UNAMES.map(x=>`<option value="${x}">`).join('')}</datalist>
+ ${rows.map((r,i)=>`<div style="background:var(--bg);border-radius:12px;padding:10px;margin-bottom:8px"><div class="frow" style="align-items:flex-end"><label class="f" style="margin:0;flex:1.3">اسم الوحدة<input list="unames" data-i="pur" data-n="${i}" data-k="n" value="${esc(r.n)}" placeholder="كرتونة"></label><label class="f" style="margin:0;flex:1">كم قطعة فيها؟<input data-i="pur" data-n="${i}" data-k="f" inputmode="decimal" value="${esc(r.f)}" placeholder="24"></label><button class="btn ghost bad sm" data-a="pudel" data-n="${i}" style="margin-bottom:2px">✕</button></div>
+  <label class="f" style="margin:8px 0 0"><span id="pul${i}">سعر ال${esc(r.n||'وحدة')}</span> (اختياري)<input data-i="pur" data-n="${i}" data-k="p" inputmode="decimal" value="${esc(r.p)}" placeholder="اتركه فاضي لينحسب لحالو"></label><p class="note" id="puh${i}" style="margin:4px 0 0">${unitHint(d,r)}</p></div>`).join('')}
+ <div class="g2" style="margin-bottom:8px">${rows.length?'':`<button class="btn ghost" data-a="puadd" data-v="كرتونة">+ كرتونة</button><button class="btn ghost" data-a="puadd" data-v="دزينة">+ دزينة</button>`}<button class="btn ghost" data-a="puadd" data-v="" ${rows.length?'style="grid-column:1/-1"':''}>+ ${rows.length?'وحدة تانية':'وحدة غيرهن'}</button></div></div>`}
 if(UPK){
  {const f=stockBadge;stockBadge=function(p,used,long){const h=f(p,used,long);if(!long||!p.track)return h;const b=unitBreak(p,r3(p.stock-(used||0)));return b?h+`<small style="display:block;margin-top:3px;color:var(--mut)">${esc(b)}</small>`:h}}
  {const f=readProd;readProd=function(){const d=f();const e=$('#pu');if(e)d.units=e.value.trim();return d}}
  {const f=P.prod;P.prod=p=>{const d=ui.pd||(ui.pd=newDraft());let h=f(p);
-  h=h.replace('</datalist></label>',`</datalist></label><label class="f" style="margin:12px 0 0">وحدات التعبئة (اختياري)<input id="pu" data-i="pu" value="${esc(d.units||'')}" placeholder="مثال: دزينة=12, كرتونة=24"><small class="sub">الاسم=كم قطعة فيها. وإذا إلها سعر خاص: كرتونة=24@3400</small></label>`);
+  {const i=h.indexOf('<input id="pp"'),j=i<0?-1:h.indexOf('<div class="card">',i);if(j>0)h=h.slice(0,j)+'<div class="card">'+unitEd(d)+'</div>'+h.slice(j);else h=h.replace('</datalist></label>','</datalist></label>'+unitEd(d))}
+  if(unitRows(d).length)h=h.replace('<label class="f">سعر البيع<input id="pp"','<label class="f">سعر بيع القطعة الواحدة<input id="pp"');
   const us=unitsOf({units:d.units}).filter(u=>u.f>1);
-  if(us.length)h=h.replace(/(<label class="f mt" style="[^"]*">الكمية المتوفرة<input id="ps"[^>]*><\/label>)/,`$1<div class="g2" style="${d.track?'':'display:none'}"><label class="f" style="margin:0">أو اكتب العدد<input id="psn" data-i="psn" inputmode="decimal" placeholder="مثلاً 10"></label><label class="f" style="margin:0">من<select id="psu" class="inp" data-i="psn" style="margin:0">${us.map(u=>`<option value="${u.f}">${esc(u.n)} (${u.f})</option>`).join('')}</select></label></div><p class="note" id="psh"></p>`);
+  if(us.length||unitRows(d).length)h=h.replace(/(<label class="f mt" style="[^"]*">الكمية المتوفرة<input id="ps"[^>]*><\/label>)/,`$1<div class="g2" style="${d.track?'':'display:none'}"><label class="f" style="margin:0">أو اكتب العدد<input id="psn" data-i="psn" inputmode="decimal" placeholder="مثلاً 10"></label><label class="f" style="margin:0">من<select id="psu" class="inp" data-i="psn" style="margin:0">${us.map(u=>`<option value="${u.f}">${esc(u.n)} (${u.f})</option>`).join('')}</select></label></div><p class="note" id="psh"></p>`);
   return h}}
  IN.pu=v=>{if(ui.pd)ui.pd.units=v};
+ IN.pur=(v,el)=>{const d=ui.pd;if(!d)return;const rows=unitRows(d),r=rows[+el.dataset.n];if(!r)return;r[el.dataset.k]=v;d.units=unitSer(rows);const e=$('#pu');if(e)e.value=d.units;const h=$('#puh'+el.dataset.n);if(h)h.innerHTML=unitHint(d,r);const lb=$('#pul'+el.dataset.n);if(lb)lb.textContent='سعر ال'+(r.n||'وحدة');
+  const sel=$('#psu');if(sel&&el.dataset.k!=='p'){const us=unitsOf({units:d.units}).filter(u=>u.f>1);sel.innerHTML=us.map(u=>`<option value="${u.f}">${esc(u.n)} (${u.f})</option>`).join('');IN.psn()}};
+ A.puadd=dd=>{const d=ui.pd;if(!d)return;const x=readProd();Object.assign(d,x,{urows:unitRows(d)});d.urows.push({n:dd.v||'',f:dd.v==='دزينة'?'12':'',p:''});render();setTimeout(()=>{const l=document.querySelectorAll('[data-i=pur][data-k='+(dd.v?'f':'n')+']');const e=l[l.length-1];if(e)e.focus()},60)};
+ A.pudel=dd=>{const d=ui.pd;if(!d)return;const x=readProd();const rows=unitRows(d);rows.splice(+dd.n,1);Object.assign(d,x,{urows:rows,units:unitSer(rows)});render()};
  IN.psn=()=>{const n=num(val('psn')),f=num(val('psu'))||1,e=$('#ps'),h=$('#psh');if(!e)return;if(n>0){e.value=r3(n*f);if(h)h.textContent=`= ${fmt(r3(n*f))} قطعة`}else if(h)h.textContent=''};
  /* بعد كتابة الوحدات، نعيد رسم النموذج لتظهر خانة الإدخال بالوحدة */
- document.addEventListener('change',e=>{if(e.target&&e.target.id==='pu'&&ui.pd){ui.pd=readProd();render()}});
- {const f=A.editprod;A.editprod=(d,el,e)=>{f(d,el,e);const p=prodById(d.id);if(p&&ui.pd&&ui.pd.id===p.id){ui.pd.units=p.units||'';render()}}}
+  document.addEventListener('input',e=>{if(e.target&&e.target.id==='pp'&&ui.pd&&ui.pd.urows)ui.pd.urows.forEach((r,i)=>{const h=$('#puh'+i);if(h)h.innerHTML=unitHint(ui.pd,r)})});
+ {const f=A.editprod;A.editprod=(d,el,e)=>{f(d,el,e);const p=prodById(d.id);if(p&&ui.pd&&ui.pd.id===p.id){ui.pd.units=p.units||'';ui.pd.urows=null;render()}}}
  {const f=A.saveprod;A.saveprod=(d,el,e)=>{const x=readProd(),n=DB.products.length;f(d,el,e);
   const p=x.id?prodById(x.id):(DB.products.length>n?DB.products[DB.products.length-1]:null);if(p&&p.name===x.name){p.units=x.units||'';flush()}}}
  /* فاتورة الشراء: الكمية بالوحدة */
