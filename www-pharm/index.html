@@ -1048,7 +1048,7 @@ async function onlineActivate(code){if(!ADMIN_URL)return 'التفعيل عبر 
 /* ---------- لوحة الإدارة: تسجيل وإعدادات ---------- */
 async function sendReg(){const r=DB.reg;if(!ADMIN_URL||!r||r.sent||!navigator.onLine)return;await stableDev();
  try{await fetch(ADMIN_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a:'reg',dev:DB.lic.dev,owner:r.owner,store:r.store,phone:r.phone,kind:APPNAME,t:r.t,ver:VERSION})});r.sent=Date.now();save()}catch(e){}}
-function rateFor(r){let x=+((r||{}).rate)||0;if(x>0&&x<2000&&(+S().rate||0)>=2000)x=Math.round(x*100);return x}
+function rateFor(r){if((S().lc||'SYP')==='TRY')return Math.round((+((r||{}).rateTry)||0)*100)/100;let x=+((r||{}).rate)||0;if(x>0&&x<2000&&(+S().rate||0)>=2000)x=Math.round(x*100);return x}
 function rateSane(x){const c=+S().rate||0;return !c||Math.abs(x-c)/c<=0.2}
 async function fetchRemote(){if(!ADMIN_URL||!navigator.onLine)return;
  try{const r=await (await fetch(`${ADMIN_URL}?a=config&dev=${DB.lic.dev}&ver=${VERSION}`)).json();if(!r)return;DB.remote=Object.assign({t:Date.now()},r);
@@ -2564,12 +2564,10 @@ function lcWalk(root){if(!lcOn()||!root)return;const w=document.createTreeWalker
 new MutationObserver(ms=>{if(!lcOn())return;for(const m of ms){if(m.type==='characterData')lcWalk(m.target.parentNode);else m.addedNodes.forEach(n=>n.nodeType===3?lcWalk(n.parentNode):lcWalk(n))}}).observe(document.documentElement,{subtree:true,childList:true,characterData:true});
 {const f=openWA;openWA=function(ph,t){return f(ph,lcFix(t))}}
 {const f=shareText;shareText=function(t){return f(lcFix(t))}}
-{const f=notices;notices=function(){let h=f();if(lcOn())h=h.replace(/<div class="warn">(?:(?!<div class="warn">)[\s\S])*?سعر الصرف المقترح اليوم[\s\S]*?<\/button><\/div>/,'');return h}}
 {const f=setView;setView=function(){let h=f();if(LITE)return h;const c=S().lc||'SYP';
- const row=`<div class="nolc">${opt('العملة المحلية','العملة يلي بيتعامل فيها المحل غير الدولار',seg('setlc',c,[['SYP','ليرة سورية'],['TRY','ليرة تركية']]))}</div>${c==='TRY'?'<p class="note">بالتركي حط سعر الصرف بإيدك (كم ليرة تركية بالدولار). التحديث التلقائي للتركي بيجي بتحديث قريب.</p>':''}`;
+ const row=`<div class="nolc">${opt('العملة المحلية','العملة يلي بيتعامل فيها المحل غير الدولار',seg('setlc',c,[['SYP','ليرة سورية'],['TRY','ليرة تركية']]))}</div>`;
  return h.replace('<h3>العملة وسعر الصرف</h3>','<h3>العملة وسعر الصرف</h3>'+row)}}
-A.setlc=d=>{if((S().lc||'SYP')===d.v)return;S().lc=d.v;if(d.v!=='SYP'){S().rateAuto=false;toast('غيّر سعر الصرف: كم '+LC[d.v].name+' بالدولار',6000)}logA('العملة المحلية: '+LC[d.v].name);save();render()};
-{const f=A.tg;A.tg=(d,el,e)=>{if(d.k==='rateAuto'&&lcOn()&&!S().rateAuto)return toast('التحديث التلقائي متاح لليرة السورية بس حالياً');return f(d,el,e)}}
+A.setlc=d=>{if((S().lc||'SYP')===d.v)return;S().lc=d.v;S().rateAt=0;setTimeout(()=>{try{adminCheck()}catch(e){}},300);logA('العملة المحلية: '+LC[d.v].name);save();render()};
 
 /* ---------- استعادة المخزون بس ---------- */
 function restoreInv(x){const n=(x.products||[]).length;DB.products=JSON.parse(JSON.stringify(x.products||[]));DB.cats=[...new Set((x.cats||[]).concat(DB.products.map(p=>p.cat).filter(Boolean)))];

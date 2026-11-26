@@ -12,8 +12,9 @@ function find_(s, dev) {
 function settings_() {
   const t = SpreadsheetApp.getActive().getSheetByName(SH_SET);
   const v = t.getRange(1, 2, 7, 1).getValues().map(r => r[0]);
+  const rn = rateNow_(v[0]);
   return {
-    rate: rateNow_(v[0]),
+    rate: rn.rate, rateTry: rn.rateTry,
     msg: v[1] ? { id: String(v[2] || 1), text: String(v[1]) } : null,
     ver: String(v[3] || ''), url: String(v[4] || ''),
     force: v[5] === 'نعم', notes: String(v[6] || '')
