@@ -210,8 +210,8 @@ const SECRET='Kh7#aNs4-c@sh1er/26x';    // سر توليد أكواد التفع
 const FREE_OPS=40;                      // عمليات البيع المجانية
 const PACKS=[
  {id:1,type:'days',n:30,name:'اشتراك شهري',desc:'مبيعات بلا حدود لمدة 30 يوم',price:10},
- {id:2,type:'days',n:365,name:'اشتراك سنوي',desc:'مبيعات بلا حدود لمدة سنة كاملة',price:50},
- {id:3,type:'life',n:0,name:'مدى الحياة',desc:'العرض التوفيري: ادفع مرة واحدة واستخدم للأبد',price:150,best:true}
+ {id:2,type:'days',n:365,name:'اشتراك سنوي',desc:'مبيعات بلا حدود لمدة سنة كاملة',price:40},
+ {id:3,type:'life',n:0,name:'مدى الحياة',desc:'العرض التوفيري: ادفع مرة واحدة واستخدم للأبد',price:100,best:true}
 ];
 
 /* ============ أدوات عامة ============ */
@@ -2755,6 +2755,7 @@ A.ecdel=d=>ask(`حذف نوع "${d.v}" من القائمة؟ المصاريف ا
 /* نهاية p15.js */
 
 /* ============ p16: التحديث التلقائي للبرنامج ============ */
+if(window.khDesktop)PACKS[2].price=200; // نسخة اللابتوب مدى الحياة
 const KHB={v:parseInt('__KHV__',10)||0,f:'__KHF__',k:'__KHK__'};
 const UPD_API='https://api.github.com/repos/alkhansa-cashier/alkhansa-apps/releases?per_page=50';
 async function khUpdCheck(force){
