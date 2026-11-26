@@ -286,7 +286,8 @@ function buzz(){if(S().vibrate&&navigator.vibrate){try{navigator.vibrate(45)}cat
 /* ============ الترخيص والتفعيل ============ */
 function licNow(){const l=DB.lic,n=Math.max(Date.now(),l.last||0);if(n-(l.last||0)>60000){l.last=n;save()}return n}
 const licTime=()=>DB.lic.until>licNow();
-const graceOut=()=>!!(ADMIN_URL&&DB.lic.lastOk&&Date.now()-DB.lic.lastOk>7*864e5);
+const licLife=()=>!!(DB.lic.until&&DB.lic.until-Date.now()>36500*864e5);
+const graceOut=()=>!licLife()&&!!(ADMIN_URL&&DB.lic.lastOk&&Date.now()-DB.lic.lastOk>7*864e5);
 const licCan=()=>!DB.lic.blocked&&!graceOut()&&(licTime()||trialLeft()>0);
 function licText(){if(DB.lic.blocked)return 'الاشتراك موقوف، تواصل مع الدعم';if(graceOut())return 'اتصل بالإنترنت للتحقق من الاشتراك';if(licTime()){const d=Math.ceil((DB.lic.until-licNow())/864e5);if(d>36500)return 'اشتراك مدى الحياة فعّال';return `الاشتراك فعّال، باقي ${d} يوم`}
  const t=trialLeft();return t>0?`تجربة مجانية: باقي ${t} ${t>2&&t<11?'أيام':'يوم'} من ${TRIAL_DAYS}`:'انتهت الفترة التجريبية، فعّل الاشتراك للمتابعة'}
