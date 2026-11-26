@@ -356,7 +356,7 @@ async function nbAuto(){if(!NB()||!S().bt)return;for(const slot of (S().onePr?['
 /* ============ الخصم وسعر الجملة ============ */
 const curPrice=p=>{const o=offerOf(p);return o?roundM(conv(o.price,o.cur,S().cur)):curPrice0(p)},curPrice0=p=>S().whole&&ui.whole&&p.wprice>0?roundM(conv(p.wprice,p.cur,S().cur)):pPrice(p);
 function discAmt(sub){const p=ui.pay||{};if(!S().discOn)return 0;if(p.dp>0)return Math.min(sub,roundM(sub*p.dp/100));if(p.da>0)return Math.min(sub,roundM(p.da));return 0}
-const payTotal=()=>{const sub=cartTotal(carts.sale);return roundM(sub-discAmt(sub))};
+const payTotal=()=>{const sub=cartTotal(carts.sale),d=discAmt(sub);return roundM(sub-d+taxOf(carts.sale,sub,d).add)};
 function discBox(sub){if(!S().discOn)return '';const p=ui.pay,d=discAmt(sub);
  return `<div class="card" style="padding:10px 12px;margin-bottom:10px"><div style="display:flex;justify-content:space-between"><b>الخصم</b>${d?`<span class="badge out">−${money(d)}</span>`:''}</div>
  <div class="chips" style="flex-wrap:wrap;margin-top:6px"><button class="chip ${!p.dp&&!p.da?'on':''}" data-a="dsc" data-v="0">بدون</button>${S().discs.map(v=>`<button class="chip ${p.dp===v?'on':''}" data-a="dsc" data-v="${v}">${fmt(v)}%</button>`).join('')}</div>

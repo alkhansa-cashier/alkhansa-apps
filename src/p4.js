@@ -66,7 +66,7 @@ const A={
  cancelsale:()=>ask('إلغاء عملية البيع وتفريغ السلة؟','إلغاء البيع',()=>{carts.sale=[];ui.saleCust=''},true),
  quickclear:()=>{carts.quick=[];ui.last=null;render()},
  checkout:()=>{if(!carts.sale.length)return;if(!licCan()){toast(licText(),6000);open('act');return}
-  ui.pay={paid:cartTotal(carts.sale),method:'cash',dp:0,da:0};open('pay',{},true)},
+  ui.pay={paid:0,method:'cash',dp:0,da:0};ui.pay.paid=payTotal();open('pay',{},true)},
  paym:(d,el)=>{const was=ui.pay.method;ui.pay.method=d.v;if(d.v==='mix'||was==='mix'){if(d.v==='mix')ui.pay.ps=0;render()}else el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el))},
  dosale:()=>{const t=payTotal(),paid=num($('#paid').value);if(!carts.sale.length)return back();
   let meta=null;if(S().kind==='rest'){meta=Object.assign({type:'take'},ui.ord||{});if(!meta.no)meta.no=nextOrderNo()}

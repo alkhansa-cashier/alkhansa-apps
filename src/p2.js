@@ -96,9 +96,13 @@ function activate(code){code=toLatin(code).replace(/\D/g,'');if(code.length!==8)
 
 /* ============ البيع والإرجاع ============ */
 const shamPart=s=>s.method==='sham'?s.paid:s.method==='mix'?Math.min(s.paid,s.ps||0):0,cashPart=s=>roundM(s.paid-shamPart(s));
-function makeSale(paid,method,cid,meta){const cart=carts.sale,cur=S().cur,sub=cartTotal(cart),disc=discAmt(sub),total=roundM(sub-disc);
+/* الضريبة: excl فوق السعر، incl ضمن السعر */
+function taxOf(cart,sub,disc){const o=S(),r=+o.taxRate||0;if(!r||(o.taxMode!=='excl'&&o.taxMode!=='incl'))return {add:0,tax:0};
+ let tb=0;for(const i of cart){const p=i.pid&&prodById(i.pid);if(p&&p.taxEx)continue;tb+=i.price*i.qty}if(sub>0&&disc)tb*=Math.max(0,(sub-disc)/sub);
+ if(o.taxMode==='excl'){const x=roundM(tb*r/100);return {add:x,tax:x}}return {add:0,tax:roundM(tb-tb/(1+r/100))}}
+function makeSale(paid,method,cid,meta){const cart=carts.sale,cur=S().cur,sub=cartTotal(cart),disc=discAmt(sub),tx=taxOf(cart,sub,disc),total=roundM(sub-disc+tx.add);
  paid=Math.max(0,Math.min(roundM(paid),total));const remaining=roundM(total-paid);
- const sale={id:uid(),no:++DB.seq,t:Date.now(),cur,rate:S().rate,total,paid,remaining,method,ps:method==='mix'?roundM(Math.min(paid,ui.pay.ps||0)):0,cid:cid||'',by:curUserName(),sub,disc,dpct:disc?(ui.pay.dp||0):0,whole:!!(S().whole&&ui.whole),
+ const sale={id:uid(),no:++DB.seq,t:Date.now(),cur,rate:S().rate,total,paid,remaining,method,tax:tx.tax,taxM:tx.tax?S().taxMode:'',taxR:tx.tax?+S().taxRate:0,ps:method==='mix'?roundM(Math.min(paid,ui.pay.ps||0)):0,cid:cid||'',by:curUserName(),sub,disc,dpct:disc?(ui.pay.dp||0):0,whole:!!(S().whole&&ui.whole),
   items:cart.map(i=>Object.assign({pid:i.pid||'',name:i.name,price:i.price,cost:i.cost||0,qty:i.qty,note:i.note||''},i.uq>1?{uq:i.uq}:{}))};
  if(meta){sale.ord={no:meta.no,type:meta.type,table:meta.table||'',name:meta.name||'',phone:meta.phone||'',addr:meta.addr||''};if(meta.id)DB.orders=DB.orders.filter(o=>o.id!==meta.id)}
  for(const i of cart){const p=i.pid&&prodById(i.pid),q=r3(i.qty*(i.uq||1));if(p){if(p.track)p.stock=r3(p.stock-q);p.sold=r3((p.sold||0)+q)}}
@@ -187,7 +191,7 @@ async function receiptCanvas(s){const W=S().paper===58?384:(S().pw||576),k=W/576
  for(const i of s.items){const tot=m(roundM(i.price*i.qty,s.cur));
   if(T==='compact')two(cut(i.name,18)+(i.qty!==1?' ×'+fq(i.qty):''),tot,22,true);else{two(cut(i.name,nmax),tot,24,true);txt(`${fq(i.qty)} × ${m(i.price)}`,20)}
   if(i.note)txt('ملاحظة: '+i.note,20)}
- line();if(s.disc){two('المجموع',m(s.sub),22);two('الخصم'+(s.dpct?' '+s.dpct+'%':''),'−'+m(s.disc),22,true)}two('الإجمالي',m(s.total),30,true);if(S().dual){const o=otherAmt(s.total,s.cur,s.rate);two('ما يعادل',money(o.v,o.c),22)}
+ line();if(s.disc){two('المجموع',m(s.sub),22);two('الخصم'+(s.dpct?' '+s.dpct+'%':''),'−'+m(s.disc),22,true)}if(s.tax&&s.taxM==='excl'){if(!s.disc)two('المجموع',m(roundM(s.total-s.tax,s.cur)),22);two((S().taxName||'الضريبة')+' '+s.taxR+'%',m(s.tax),22)}two('الإجمالي',m(s.total),30,true);if(s.tax&&s.taxM==='incl')two('شامل '+(S().taxName||'الضريبة')+' '+s.taxR+'%',m(s.tax),20);if(s.tax&&S().taxNo)txt('الرقم الضريبي: '+S().taxNo,18,false,'center');if(S().dual){const o=otherAmt(s.total,s.cur,s.rate);two('ما يعادل',money(o.v,o.c),22)}
  if(s.method==='mix'){two('دفع كاش',m(cashPart(s)),22);two('دفع شام كاش',m(shamPart(s)),22)}if(s.remaining>0){two('المدفوع',m(s.paid),22);two('المتبقي',m(s.remaining),22,true)}
  if(T!=='compact'){line();if(S().footer)txt(S().footer,22,false,'center')}y+=pad;
  const cv=document.createElement('canvas');cv.width=W;cv.height=Math.ceil(y);const x=cv.getContext('2d');
