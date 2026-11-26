@@ -2852,9 +2852,9 @@ if(KIND==='rest'&&!LITE){
  /* زر بالفاتورة */
  {const f=P.sale;P.sale=p=>{let h=f(p);const s=DB.sales.find(x=>x.id===p.id);if(!s)return h;
   if((s.edits||[]).length)h=h.replace('<div class="card">',`<div class="warn" style="display:block">✏️ <b>تعدّلت بعد الدفع ${s.edits.length} مرة</b>${s.edits.map(x=>`<div class="note" style="margin-top:4px">${dt(x.t)} · ${esc(x.by||'')} · ${money(x.old)} ← ${money(x.new)}${x.ch?'<br>'+esc(x.ch):''}</div>`).join('')}</div><div class="card">`);
-  if(!reditWhy(s)&&!monOn())h=h.replace('<div class="acts">',`<div class="acts"><button class="btn ghost" data-a="redit" data-id="${s.id}">✏️ تعديل الطلب</button>`);
+  if(S().reditOn&&!reditWhy(s)&&!monOn())h=h.replace('<div class="acts">',`<div class="acts"><button class="btn ghost" data-a="redit" data-id="${s.id}">✏️ تعديل الطلب</button>`);
   return h}}
- A.redit=d=>{const s=DB.sales.find(x=>x.id===d.id),w=reditWhy(s);if(w)return toast(w,5000);
+ A.redit=d=>{if(!S().reditOn)return toast('تعديل الطلب بعد الدفع مطفي من الإعدادات');const s=DB.sales.find(x=>x.id===d.id),w=reditWhy(s);if(w)return toast(w,5000);
   if(carts.sale.length||ui.ord)return toast('خلّص الطلب يلي مفتوح أو احفظو أول',5000);
   const cur=S().cur;carts.sale=JSON.parse(JSON.stringify(s.items)).map(i=>Object.assign(i,{price:roundM(conv(i.price,s.cur,cur,s.rate)),cost:i.cost?roundM(conv(i.cost,s.cur,cur,s.rate)):0,sent:i.qty,sentNote:i.note||''}));
   ui.redit={id:s.id};ui.sel='';back(()=>{tab='pos'},stack.length);setTimeout(()=>{tab='pos';render()},50);toast('زيد أو شيل أصناف، وبعدين اكبس "حفظ التعديل"',5000)};
@@ -2896,8 +2896,9 @@ if(KIND==='rest'&&!LITE){
   toast(c.delta>0?'خود من الزبون '+money(c.delta):c.delta<0?'رجّع للزبون '+money(-c.delta):'تم التعديل',7000);
   try{cloudUp(true)}catch(e){}}
  {const f=A.refund;if(f)A.refund=(d,el,e)=>S().reditPin&&ownerPinSet()?guardPin(()=>f(d,el,e)):f(d,el,e)}
+ A.reditOnTg=()=>guardPin(()=>{S().reditOn=!S().reditOn;logA((S().reditOn?'تشغيل':'إطفاء')+' تعديل الفاتورة بعد الدفع');save();render()});
  /* إعداد: رمز صاحب المطعم لتنقيص صنف */
- {const f=setView;setView=function(){let h=f();const c=card('تعديل الطلب بعد الدفع','إذا الزبون دفع وبدو يزيد أو يشيل صنف',`${opt('رمز صاحب المطعم لتنقيص صنف','إذا مطفي، أي كاشير بيقدر يشيل، وبينسجّل بالمراقبة وسجل الإلغاءات',sw(!!S().reditPin,'tg','reditPin'))}${S().reditPin&&!ownerPinSet()?'<p class="note" style="color:var(--bad)">لازم تحط رمز صاحب المحل أول (من خانة رمز الصافي)</p>':''}`);
+ {const f=setView;setView=function(){let h=f();const on=!!S().reditOn;const c=card('تعديل الطلب بعد الدفع','إذا الزبون دفع وبدو يزيد أو يشيل صنف',`${opt('السماح بتعديل الفاتورة المدفوعة',on?'شغّال: بيطلع زر "تعديل الطلب" بالفاتورة':'مطفي: الفاتورة المدفوعة ما بتتعدّل، بس بتترجع',sw(on,'reditOnTg',''))}${on?opt('رمز صاحب المطعم لتنقيص صنف','إذا مطفي، أي كاشير بيقدر يشيل، وبينسجّل بالمراقبة وسجل الإلغاءات',sw(!!S().reditPin,'tg','reditPin'))+(S().reditPin&&!ownerPinSet()?'<p class="note" style="color:var(--bad)">لازم تحط رمز صاحب المحل أول (من خانة رمز الصافي)</p>':''):''}`);
   const mk='<div class="card"><h3>الدعم الفني</h3>';return h.includes(mk)?h.replace(mk,c+mk):h+c}}
 }
 /* نهاية p17.js */
