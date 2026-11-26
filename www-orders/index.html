@@ -1026,8 +1026,8 @@ async function onlineActivate(code){if(!ADMIN_URL)return 'التفعيل عبر 
  catch(e){return 'تعذّر الاتصال بالخادم، حاول لاحقاً'}}
 
 /* ---------- لوحة الإدارة: تسجيل وإعدادات ---------- */
-async function sendReg(){const r=DB.reg;if(!ADMIN_URL||!r||r.sent||!navigator.onLine)return;
- try{await fetch(ADMIN_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a:'reg',dev:DB.lic.dev,owner:r.owner,store:r.store,phone:r.phone,kind:r.kind,t:r.t,ver:VERSION})});r.sent=Date.now();save()}catch(e){}}
+async function sendReg(){const r=DB.reg;if(!ADMIN_URL||!r||r.sent||!navigator.onLine)return;await stableDev();
+ try{await fetch(ADMIN_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a:'reg',dev:DB.lic.dev,owner:r.owner,store:r.store,phone:r.phone,kind:APPNAME,t:r.t,ver:VERSION})});r.sent=Date.now();save()}catch(e){}}
 function rateFor(r){let x=+((r||{}).rate)||0;if(x>0&&x<2000&&(+S().rate||0)>=2000)x=Math.round(x*100);return x}
 function rateSane(x){const c=+S().rate||0;return !c||Math.abs(x-c)/c<=0.2}
 async function fetchRemote(){if(!ADMIN_URL||!navigator.onLine)return;
